@@ -1,0 +1,142 @@
+{
+ "settings": {
+  "signupOpen": true,
+  "approval": false,
+  "trialDays": 14,
+  "trialPlan": "pro",
+  "graceDays": 3,
+  "autoDowngrade": true,
+  "lockOnExpire": true,
+  "disc3": 5,
+  "disc12": 15,
+  "reqDays": 3,
+  "pay": {
+   "transfer": {
+    "on": false,
+    "bank": "",
+    "accName": "",
+    "accNo": "",
+    "qr": "",
+    "note": ""
+   }
+  },
+  "whatsapp": "",
+  "phone": "",
+  "line": "",
+  "email": "",
+  "hours": {
+   "lo": "",
+   "th": "",
+   "en": ""
+  },
+  "address": {
+   "lo": "",
+   "th": "",
+   "en": ""
+  },
+  "terms": {
+   "lo": "ຂ້ອຍຍອມຮັບເງື່ອນໄຂການໃຊ້ງານ: ຂໍ້ມູນຮ້ານເປັນຂອງເຈົ້າຂອງຮ້ານ, ຄ່າບໍລິການຊຳລະລ່ວງໜ້າຕາມແພັກເກັດ, ແລະ ບັນຊີອາດຖືກລະງັບຖ້າໃຊ້ງານຜິດກົດລະບຽບ.",
+   "th": "ฉันยอมรับเงื่อนไขการใช้งาน: ข้อมูลร้านเป็นของเจ้าของร้าน ค่าบริการชำระล่วงหน้าตามแพ็คเกจ และบัญชีอาจถูกระงับหากใช้งานผิดกติกา",
+   "en": "I accept the terms: shop data belongs to the shop owner, fees are paid in advance per plan, and accounts may be suspended for misuse."
+  },
+  "aff": {
+   "on": false,
+   "pct": 10,
+   "min": 50000
+  }
+ },
+ "plans": [
+  {
+   "id": "free",
+   "name": {
+    "lo": "ຟຣີ",
+    "th": "ฟรี",
+    "en": "Free"
+   },
+   "desc": {
+    "lo": "ລອງເປີດຮ້ານທຳອິດ",
+    "th": "ลองเปิดร้านแรก",
+    "en": "Try your first shop"
+   },
+   "price": 0,
+   "shops": 1,
+   "products": 20,
+   "whs": 1,
+   "coupons": false,
+   "members": false,
+   "pop": false,
+   "on": true
+  },
+  {
+   "id": "basic",
+   "name": {
+    "lo": "ເບຊິກ",
+    "th": "เบสิก",
+    "en": "Basic"
+   },
+   "desc": {
+    "lo": "ສຳລັບຮ້ານທີ່ເລີ່ມຂາຍຈິງຈັງ",
+    "th": "สำหรับร้านที่เริ่มขายจริงจัง",
+    "en": "For shops that sell every week"
+   },
+   "price": 199000,
+   "shops": 2,
+   "products": 200,
+   "whs": 1,
+   "coupons": true,
+   "members": false,
+   "pop": false,
+   "on": true
+  },
+  {
+   "id": "pro",
+   "name": {
+    "lo": "ໂປຣ",
+    "th": "โปร",
+    "en": "Pro"
+   },
+   "desc": {
+    "lo": "ຫຼາຍຮ້ານ ຫຼາຍຄັງ ພ້ອມສະມາຊິກ",
+    "th": "หลายร้าน หลายคลัง พร้อมสมาชิก",
+    "en": "Many shops, warehouses and members"
+   },
+   "price": 499000,
+   "shops": 5,
+   "products": 1000,
+   "whs": 3,
+   "coupons": true,
+   "members": true,
+   "pop": true,
+   "on": true
+  },
+  {
+   "id": "business",
+   "name": {
+    "lo": "ທຸລະກິດ",
+    "th": "บิสิเนส",
+    "en": "Business"
+   },
+   "desc": {
+    "lo": "ບໍ່ຈຳກັດສຳລັບທຸລະກິດໃຫຍ່",
+    "th": "ไม่จำกัดสำหรับธุรกิจใหญ่",
+    "en": "Unlimited for growing businesses"
+   },
+   "price": 1290000,
+   "shops": 999,
+   "products": 99999,
+   "whs": 99,
+   "coupons": true,
+   "members": true,
+   "pop": false,
+   "on": true
+  }
+ ],
+ "requests": [],
+ "payments": [],
+ "messages": [],
+ "seq": {
+  "req": 1001,
+  "pay": 1001,
+  "msg": 1001
+ }
+}

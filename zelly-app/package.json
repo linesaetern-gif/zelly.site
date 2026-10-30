@@ -1,0 +1,20 @@
+{
+  "name": "zelly",
+  "version": "1.0.0",
+  "description": "Zelly - multi-shop online store builder",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/run.js",
+    "dbcheck": "node scripts/dbcheck.js",
+    "test:e2e": "node test/e2e.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  },
+  "license": "UNLICENSED"
+}
