@@ -31,7 +31,8 @@ function serveFile(req, res, file) {
 async function handler(req, res) {
   try {
     const url = new URL(req.url, 'http://x'), p = url.pathname;
-    if (p === '/healthz') { await q('SELECT 1 AS ok'); return send(res, 200, { ok: true, db: DB.CLIENT }); }
+    if (!ready && p !== '/healthz') return send(res, 503, { error: 'starting' });
+    if (p === '/healthz') { if (!ready) return send(res, 503, { ok: false, starting: true }); await q('SELECT 1 AS ok'); return send(res, 200, { ok: true, db: DB.CLIENT }); }
     if (p.startsWith('/api/') || p.startsWith('/b/')) {
       if (req.method === 'POST') { const o = req.headers.origin; if (o && req.headers.host && new URL(o).host !== req.headers.host) throw new U.HttpError(403, 'origin'); }
       const user = p.startsWith('/api/') ? await S.userFor(require('./lib/http').parseCookies(req.headers.cookie)) : null;
@@ -69,17 +70,21 @@ async function sweepOrders() {
     for (const r of rows) await U.withLock(r.id, async () => { const w = await M.getOwnerDoc(r.id.slice(2)); if (w && M.expireOrders(w.doc)) await M.putDoc(r.id, w.doc); });
   } catch (e) { console.error('[sweep]', e.message); }
 }
+let ready = false;
 async function start() {
-  if (process.env.NODE_ENV === 'production' && DB.CLIENT === 'sqlite' && !process.env.ALLOW_SQLITE) throw new Error('DB_HOST is not set. Create a MySQL database in hPanel and add DB_HOST / DB_USER / DB_PASSWORD / DB_NAME to the environment variables (see README).');
-  await DB.migrate(); await M.getPlat(); await bootstrapAdmin();
+  /* listen first: some hosts (Hostinger) require the port to open within ~3 s, before the database is reachable */
   const port = process.env.PORT === undefined || process.env.PORT === '' ? 3000 : Number(process.env.PORT), srv = http.createServer(handler);
   srv.requestTimeout = 60e3; srv.headersTimeout = 20e3; srv.keepAliveTimeout = 65e3;
   await new Promise(ok => srv.listen(port, '0.0.0.0', ok));
   console.log('[zelly] listening on :' + srv.address().port + ' db=' + DB.CLIENT);
+  try {
+    if (process.env.NODE_ENV === 'production' && DB.CLIENT === 'sqlite' && !process.env.ALLOW_SQLITE) throw new Error('DB_HOST is not set. Create a MySQL database in hPanel and add DB_HOST / DB_USER / DB_PASSWORD / DB_NAME to the environment variables (see README).');
+    await DB.migrate(); await M.getPlat(); await bootstrapAdmin(); ready = true; console.log('[zelly] ready');
+  } catch (e) { console.error('[zelly] failed to start:', e.message); srv.close(); process.exit(1); }
   const t = setInterval(sweepOrders, 5 * 60e3); t.unref();
   const bye = () => { srv.close(() => DB.close().then(() => process.exit(0), () => process.exit(0))); setTimeout(() => process.exit(0), 5e3).unref(); };
   process.on('SIGTERM', bye); process.on('SIGINT', bye);
   return srv;
 }
-if (require.main === module) start().catch(e => { console.error('[zelly] failed to start:', e.message); process.exit(1); });
+if (!process.env.ZELLY_NO_AUTOSTART) start();
 module.exports = { start, handler };

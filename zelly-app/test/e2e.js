@@ -2,7 +2,7 @@
 /* Browser end-to-end test:  node test/e2e.js [screenshotDir]   (needs playwright + chromium) */
 const fs = require('fs'), os = require('os'), path = require('path'), assert = require('assert');
 const tmp = path.join(os.tmpdir(), 'zelly-e2e-' + process.pid + '.sqlite'); try { fs.unlinkSync(tmp); } catch (e) {}
-process.env.SQLITE_PATH = tmp; process.env.PORT = '0'; process.env.ADMIN_EMAIL = 'root@test.io'; process.env.ADMIN_PASSWORD = 'rootpass1'; delete process.env.DB_HOST;
+process.env.ZELLY_NO_AUTOSTART = '1'; process.env.SQLITE_PATH = tmp; process.env.PORT = '0'; process.env.ADMIN_EMAIL = 'root@test.io'; process.env.ADMIN_PASSWORD = 'rootpass1'; delete process.env.DB_HOST;
 const { chromium } = require('playwright'), { start } = require('../server');
 const SHOTS = process.argv[2] || ''; if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 (async () => {

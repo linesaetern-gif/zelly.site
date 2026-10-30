@@ -2,7 +2,7 @@
 /* End-to-end API test against a temp SQLite DB:  node test/api.test.js */
 const fs = require('fs'), os = require('os'), path = require('path');
 const tmp = path.join(os.tmpdir(), 'zelly-test-' + process.pid + '.sqlite'); try { fs.unlinkSync(tmp); } catch (e) {}
-process.env.SQLITE_PATH = tmp; process.env.PORT = '0'; process.env.ADMIN_EMAIL = 'root@test.io'; process.env.ADMIN_PASSWORD = 'rootpass1';
+process.env.ZELLY_NO_AUTOSTART = '1'; process.env.SQLITE_PATH = tmp; process.env.PORT = '0'; process.env.ADMIN_EMAIL = 'root@test.io'; process.env.ADMIN_PASSWORD = 'rootpass1';
 delete process.env.DB_HOST;
 const assert = require('assert'), { start } = require('../server'), Diff = require('../lib/diff');
 let base; const jars = {};
