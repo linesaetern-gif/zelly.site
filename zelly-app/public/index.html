@@ -783,6 +783,11 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-conten
 .lp2-top .zlogo,.lp2-foot .zlogo{box-shadow:0 0 0 2px rgba(255,255,255,.85)}
 
 .qrbox{display:flex;justify-content:center;padding:6px 0}.qrbox .qr{width:224px;height:224px;border-radius:12px;border:1px solid var(--line,#e5e7eb)}.qrbox.off{opacity:.25;filter:grayscale(1)}.paywait svg{animation:paypulse 1.4s ease-in-out infinite}@keyframes paypulse{50%{opacity:.35}}
+
+#pwa-chip{position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;background:var(--brand);color:#fff;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25);overflow:hidden}
+#pwa-chip button{background:none;border:0;color:inherit;font:600 14px inherit;cursor:pointer;display:flex;align-items:center;gap:6px;padding:10px 6px 10px 14px}
+#pwa-chip .pwa-x{padding:10px 12px 10px 4px;font-size:18px;line-height:1;opacity:.8}
+@media print{#pwa-chip{display:none}}
 </style>
 
 <div id="app"></div>
@@ -2249,6 +2254,15 @@ Object.assign(T, {
   'mt.sent': ["ສົ່ງອີເມວທົດສອບແລ້ວ → {e}", "ส่งอีเมลทดสอบแล้ว → {e}", "Test email sent → {e}"],
   'mt.fail': ["ສົ່ງບໍ່ສຳເລັດ: {e}", "ส่งไม่สำเร็จ: {e}", "Could not send: {e}"],
   'mt.hint': ["ຕັ້ງຄ່າໃນ Environment variables ຂອງ Hostinger (ເບິ່ງ README).", "ตั้งค่าใน Environment variables ของ Hostinger (ดู README)", "Configure these in Hostinger's environment variables (see README)."],
+  'tf.title': ["ຕິດຕາມອໍເດີ {id}", "ติดตามออเดอร์ {id}", "Track order {id}"],
+  'tf.hint': ["ກະລຸນາໃສ່ເບີໂທທີ່ໃຊ້ສັ່ງຊື້ ເພື່ອຢືນຢັນວ່າເປັນອໍເດີຂອງທ່ານ", "กรุณากรอกเบอร์โทรที่ใช้สั่งซื้อ เพื่อยืนยันว่าเป็นออเดอร์ของคุณ", "Enter the phone number you ordered with to confirm this is your order."],
+  'tf.btn': ["ເບິ່ງອໍເດີ", "ดูออเดอร์", "View order"],
+  'tf.nf': ["ບໍ່ພົບອໍເດີທີ່ກົງກັບເບີນີ້", "ไม่พบออเดอร์ที่ตรงกับเบอร์นี้", "No order matches this phone number"],
+  'pwa.install': ["ຕິດຕັ້ງແອັບ", "ติดตั้งแอป", "Install app"],
+  'pwa.iosTitle': ["ຕິດຕັ້ງໃສ່ໜ້າຈໍຫຼັກ", "ติดตั้งลงหน้าจอโฮม", "Add to your Home Screen"],
+  'pwa.ios1': ["ເປີດໜ້ານີ້ໃນ Safari ແລ້ວກົດປຸ່ມແຊຣ໌ (ສີ່ຫຼ່ຽມມີລູກສອນຊີ້ຂຶ້ນ)", "เปิดหน้านี้ใน Safari แล้วแตะปุ่มแชร์ (สี่เหลี่ยมมีลูกศรชี้ขึ้น)", "Open this page in Safari and tap the Share button (the square with an arrow)"],
+  'pwa.ios2': ["ເລື່ອນລົງ ແລ້ວເລືອກ “ເພີ່ມໃສ່ໜ້າຈໍຫຼັກ”", "เลื่อนลงแล้วเลือก “เพิ่มไปยังหน้าจอโฮม”", "Scroll down and choose “Add to Home Screen”"],
+  'pwa.ios3': ["ກົດ “ເພີ່ມ” ແອັບຈະຢູ່ໃນໜ້າຈໍຫຼັກ", "แตะ “เพิ่ม” แอปจะอยู่บนหน้าจอโฮม", "Tap “Add” and the app appears on your Home Screen"],
   'api.loading': ["ກຳລັງໂຫຼດ…", "กำลังโหลด…", "Loading…"]
 });
 /* ================= data (example data, kept in memory) ================= */
@@ -4355,7 +4369,7 @@ function vatSheet(sh) {
 /* ================= WhatsApp / contact customer ================= */
 function waNum(ph) { let d = digits(ph); if (d.startsWith('00')) d = d.slice(2); else if (d.startsWith('0')) d = '856' + d.slice(1); return d; }
 const waLink = (ph, text) => 'https://wa.me/' + waNum(ph) + (text ? '?text=' + encodeURIComponent(text) : '');
-const trackUrl = o => BASE.replace('/s/', '/t/') + o.id;
+const trackUrl = o => { const st = store(o.store); return API_MODE && st && st.slug ? BASE + st.slug + '?track=' + encodeURIComponent(o.id) : BASE.replace('/s/', '/t/') + o.id; };
 const orderVars = o => ({ name: o.cust.name, id: o.id, shop: (store(o.store) || { name: '' }).name, url: trackUrl(o), carrier: o.carrier ? o.carrier.name : '-', tracking: o.tracking || '-', amount: money(o.total) });
 const trackMsg = o => t('wa.track', orderVars(o));
 function contactBlock(o) {
@@ -4957,8 +4971,10 @@ function zlogo(size) {
 }
 /* ================= online subscription payment (API mode): BCEL OnePay QR sheet + system status ================= */
 const payLinkOk = u => /^[a-z][a-z0-9+.-]*:\/\//i.test(String(u || '')) && !/^(javascript|data|vbscript|file):/i.test(String(u));
-function payNowBtn(id) { return '<div class="card stack" style="gap:8px;border-color:var(--pri)"><b>' + t('pn.onlineCard') + '</b><p class="xs muted" style="margin:0">' + t('pn.onlineHint') + '</p><button class="btn pri block" data-act="payonline" data-id="' + id + '">' + ico('bolt', 16) + t('pn.payNow') + '</button></div>'; }
+function payNowBtn(id) { return '<div class="card stack" style="gap:8px;border-color:var(--brand)"><b>' + t('pn.onlineCard') + '</b><p class="xs muted" style="margin:0">' + t('pn.onlineHint') + '</p><button class="btn pri block" data-act="payonline" data-id="' + id + '">' + ico('bolt', 16) + t('pn.payNow') + '</button></div>'; }
 function sheetContent9(sh) {
+  if (sh.k === 'pwaios') return { shop: PUBLIC_SHOP(), t: t('pwa.iosTitle'), b: '<ol class="sm" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px"><li>' + t('pwa.ios1') + '</li><li>' + t('pwa.ios2') + '</li><li>' + t('pwa.ios3') + '</li></ol>', f: '<button class="btn pri" data-act="close">' + t('close') + '</button>' };
+  if (sh.k === 'trackphone') return { shop: S.shop, t: t('tf.title', { id: esc(sh.id) }), b: '<form id="f-trackphone" data-form="trackphone" class="stack" novalidate><p class="muted sm" style="margin:0">' + t('tf.hint') + '</p>' + field(t('co.phone'), '<input type="tel" name="phone" inputmode="tel" autocomplete="tel" required>') + '<input type="hidden" name="id" value="' + esc(sh.id) + '"><p class="err" role="alert"></p></form>', f: '<button class="btn" data-act="close">' + t('close') + '</button><button class="btn pri" type="submit" form="f-trackphone">' + t('tf.btn') + '</button>' };
   if (sh.k !== 'paynow') return { t: '', b: '' };
   const r = PLAT.requests.find(x => x.id === sh.id); if (!r) return { t: t('pn.title'), b: '', f: '<button class="btn pri" data-act="close">' + t('close') + '</button>' };
   const sum = '<div style="text-align:center"><b>' + esc(planName(r.planId)) + '</b> · ' + t('bl.months', { n: r.months }) + '<div class="num" style="font:600 28px var(--f-display)">' + money(r.amount) + '</div><div class="xs muted">' + r.id + '</div></div>';
@@ -4982,6 +4998,8 @@ function sysStatus() {
   return '<section class="card stack"><h2 style="margin:0">' + t('mt.title') + '</h2>' + row(t('mt.pay'), PLAT.online) + row(t('mt.mail'), PLAT.emailOn) + '<p class="xs muted" style="margin:0">' + t('mt.hint') + '</p>' +
     '<div class="row"><button type="button" class="btn sm" data-act="mailtest"' + (PLAT.emailOn ? '' : ' disabled') + '>' + t('mt.send') + '</button></div></section>';
 }
+
+function PUBLIC_SHOP() { return API_MODE && window.__ZELLY__ && window.__ZELLY__.shop ? S.shop : undefined; }
 /* ================= render + events ================= */
 function render() {
   document.documentElement.lang = LANG;
@@ -5676,6 +5694,11 @@ setInterval(tickCd, 1000);
     pubSet(sr.j); DATA.pub = D; AUTH.uid = ''; S.mode = 'shop'; S.mine = S.mine || {};
     document.title = store(S.shop).name;
     await pubTrack(); render();
+    /* link from WhatsApp: /s/<shop>?track=<order id>  → open that order (ask for the phone number if this device does not know it yet) */
+    try {
+      const tid = new URLSearchParams(location.search).get('track');
+      if (tid) { S.sheet = D.orders.some(o => o.id === tid) ? { k: 'track', id: tid } : { k: 'trackphone', id: tid.slice(0, 30) }; renderSheet(); history.replaceState(null, '', location.pathname); }
+    } catch (e) { /* ignore */ }
   }
   async function pubPoll() {
     if (!PUBLIC || document.hidden || !store(S.shop)) return;
@@ -5686,6 +5709,30 @@ setInterval(tickCd, 1000);
     if (ch && !busySheet) { const a = document.activeElement; if (!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) render(); }
   }
   if (PUBLIC) setInterval(pubPoll, 20000);
+
+  /* ---------- PWA: service worker + "install app" chip ---------- */
+  try { if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) navigator.serviceWorker.register('/sw.js').catch(() => { }); } catch (e) { /* ignore */ }
+  {
+    let bip = null; const standalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const dismissed = () => { try { return Date.now() - (+localStorage.getItem('zl-pwa-x') || 0) < 7 * 864e5; } catch (e) { return false; } };
+    const chip = () => document.getElementById('pwa-chip');
+    const hide = () => { const c = chip(); if (c) c.remove(); };
+    function show() {
+      if (chip() || standalone() || dismissed() || !(bip || ios)) return;
+      const c = document.createElement('div'); c.id = 'pwa-chip';
+      c.innerHTML = '<button type="button" class="pwa-go">' + ico('bolt', 15) + '<span>' + esc(t('pwa.install')) + '</span></button><button type="button" class="pwa-x" aria-label="' + esc(t('close')) + '">×</button>';
+      c.querySelector('.pwa-go').onclick = async () => {
+        if (bip) { const p = bip; bip = null; hide(); try { p.prompt(); await p.userChoice; } catch (e) { /* ignore */ } }
+        else { hide(); S.sheet = { k: 'pwaios' }; renderSheet(); }
+      };
+      c.querySelector('.pwa-x').onclick = () => { try { localStorage.setItem('zl-pwa-x', String(Date.now())); } catch (e) { /* ignore */ } hide(); };
+      document.body.appendChild(c);
+    }
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); bip = e; setTimeout(show, 1500); });
+    window.addEventListener('appinstalled', () => { bip = null; hide(); });
+    if (ios) setTimeout(show, 4000);
+  }
   if (PUBLIC) setInterval(async () => {          // live chat while the chat sheet is open
     if (document.hidden || !S.sheet || S.sheet.k !== 'chat' || !D.threads[0]) return;
     const n = D.threads[0].msgs.length; await pubTrack(); const th = D.threads[0]; if (!th || !S.sheet || S.sheet.k !== 'chat') return;
@@ -5708,6 +5755,16 @@ setInterval(tickCd, 1000);
         D.orders = D.orders.filter(o => o.id !== r.j.order.id).concat(r.j.order); pubStock(r.j.stock, r.j.wh);
         rememberOrder(r.j.order); (S.mine[sid] = S.mine[sid] || []).push(r.j.order.id);
         CART[sid] = []; delete S.coupon[sid]; S.sheet = { k: 'done', id: r.j.order.id, points: me ? r.j.points : 0 }; render();
+      });
+    },
+    trackphone: (f, fd, g) => {
+      const ph = g('phone').replace(/\D/g, ''); if (ph.length < 9) return setErr(f, t('err.phone'));
+      return busy(f, async () => {
+        const r = await api('POST', '/api/public/track', { shop: PUBSLUG, orders: [{ id: g('id'), phone: ph }] });
+        if (r.s !== 200) return setErr(f, emsg(r));
+        const o = r.j.orders[0]; if (!o) return setErr(f, t('tf.nf'));
+        rememberOrder(o); D.orders = D.orders.filter(x => x.id !== o.id).concat(o); (S.mine[S.shop] = S.mine[S.shop] || []).push(o.id);
+        S.sheet = { k: 'track', id: o.id }; render();
       });
     },
     chatstart: (f, fd, g) => {
@@ -5746,7 +5803,7 @@ setInterval(tickCd, 1000);
     clearTimeout(PAYT); S.sheet = { k: 'paynow', id, state: 'loading' }; renderSheet();
     const r = await api('POST', '/api/billing/pay', { id, force: !!force });
     if (!payOpen(id)) return;
-    if (r.s !== 200) { const e = r.j && r.j.error; S.sheet.state = 'err'; S.sheet.msg = e === 'pay.off' ? t('pn.off') : e === 'pay.fail' ? t('pn.fail') : e === 'pay.done' ? t('pn.paidTitle') : emsg(r); renderSheet(); return; }
+    if (r.s !== 200) { const e = r.j && r.j.error; S.sheet.state = 'err'; S.sheet.msg = e === 'pay.off' ? t('pn.off') : e === 'pay.fail' ? t('pn.fail') + (r.j.detail ? ' (' + r.j.detail + ')' : '') : e === 'pay.done' ? t('pn.paidTitle') : emsg(r); renderSheet(); return; }
     Object.assign(S.sheet, { state: 'wait', qr: r.j.pay.qr, link: r.j.pay.link, at: r.j.pay.at }); renderSheet(); payPoll(id);
   }
   function payPoll(id) {

@@ -19,14 +19,15 @@ function indexHtml(shop) {
   const k = shop || '';
   if (!indexCache[k] || process.env.NODE_ENV !== 'production') {
     let h = fs.readFileSync(path.join(PUB, 'index.html'), 'utf8');
-    const inj = '<script>window.__ZELLY__=' + JSON.stringify({ api: true, shop: shop || null }).replace(/</g, '\\u003c') + '</script>';
+    const pwa = '<link rel="manifest" href="' + (shop ? '/manifest/' + encodeURIComponent(shop) + '.webmanifest' : '/manifest.webmanifest') + '"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icons/apple-touch-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">';
+    const inj = pwa + '<script>window.__ZELLY__=' + JSON.stringify({ api: true, shop: shop || null }).replace(/</g, '\\u003c') + '</script>';
     h = h.includes('<head>') ? h.replace('<head>', '<head>' + inj) : inj + h; indexCache[k] = h;
   }
   return indexCache[k];
 }
 function serveFile(req, res, file) {
   const st = fs.statSync(file), ext = path.extname(file).toLowerCase();
-  res.writeHead(200, Object.assign({ 'Content-Type': MIME[ext] || 'application/octet-stream', 'Content-Length': st.size, 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600' }, SEC));
+  res.writeHead(200, Object.assign({ 'Content-Type': MIME[ext] || 'application/octet-stream', 'Content-Length': st.size, 'Cache-Control': ext === '.html' || path.basename(file) === 'sw.js' || ext === '.webmanifest' ? 'no-cache' : 'public, max-age=3600' }, SEC));
   if (req.method === 'HEAD') return res.end(); fs.createReadStream(file).pipe(res);
 }
 async function handler(req, res) {
@@ -34,11 +35,11 @@ async function handler(req, res) {
     const url = new URL(req.url, 'http://x'), p = url.pathname;
     if (!ready && p !== '/healthz') return send(res, 503, { error: 'starting' });
     if (p === '/healthz') { if (!ready) return send(res, 503, { ok: false, starting: true }); await q('SELECT 1 AS ok'); return send(res, 200, { ok: true, db: DB.CLIENT }); }
-    if (p.startsWith('/api/') || p.startsWith('/b/')) {
+    if (p.startsWith('/api/') || p.startsWith('/b/') || p.startsWith('/t/') || p.startsWith('/manifest/')) {
       if (req.method === 'POST') { const o = req.headers.origin; if (o && req.headers.host && new URL(o).host !== req.headers.host) throw new U.HttpError(403, 'origin'); }
       const user = p.startsWith('/api/') ? await S.userFor(require('./lib/http').parseCookies(req.headers.cookie)) : null;
       const r = await dispatch(req, res, { user });
-      if (r === false) { if (p.startsWith('/b/')) { res.writeHead(404); return res.end(); } return send(res, 404, { error: 'not found' }); }
+      if (r === false) { if (p.startsWith('/b/') || p.startsWith('/t/') || p.startsWith('/manifest/')) { res.writeHead(404); return res.end(); } return send(res, 404, { error: 'not found' }); }
       return;
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { Allow: 'GET, HEAD' }); return res.end(); }

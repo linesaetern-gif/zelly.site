@@ -59,6 +59,16 @@ const SHOTS = process.argv[2] || ''; if (SHOTS) fs.mkdirSync(SHOTS, { recursive:
   const oid = await ev(cu, () => S.sheet.id); assert(/^SK-\d+$/.test(oid), oid); await shot(cu, '07_done');
   assert.equal(await ev(cu, () => stockOf('w1', 'P1-1')), 9, 'public stock updated');
   assert.deepEqual(await cu.evaluate(() => JSON.parse(localStorage.getItem('zl-mine:noyshop')).map(x => x.id)), [oid]);
+  /* ---- 3b. the tracking link the owner sends (WhatsApp) opens that order's tracking page ---- */
+  const link = await ev(ow, id => trackUrl({ id, store: S.shop }), oid); assert.equal(link, base + '/s/noyshop?track=' + oid, 'link format');
+  const tk = await mk(390, 800); await tk.goto(link); await tk.waitForSelector('#f-trackphone');           // fresh device: asks for the phone number
+  await tk.fill('#f-trackphone [name=phone]', '020 1111 2222'); await tk.click('button[form=f-trackphone]'); await tk.waitForSelector('#f-trackphone .err:not(:empty)');
+  await shot(tk, '07b_track_phone');
+  await tk.fill('#f-trackphone [name=phone]', '020 9999 8888'); await tk.click('button[form=f-trackphone]');
+  await tk.waitForFunction(id => S.sheet && S.sheet.k === 'track' && S.sheet.id === id, oid, { timeout: 8000 }); await shot(tk, '07c_track_open');
+  assert(!/track=/.test(tk.url()), 'query cleaned from the address bar');
+  await tk.goto(link); await tk.waitForFunction(id => S.sheet && S.sheet.k === 'track' && S.sheet.id === id, oid, { timeout: 8000 });   // known device: opens directly
+  const old = await mk(390, 800); await old.goto(base + '/t/' + oid); await old.waitForSelector('#f-trackphone');   // old-style link still lands on the tracking page
 
   /* ---- 4. owner receives the order without losing own edits, then packs it ---- */
   await ev(ow, () => { store(S.shop).tagline = 'Hello v2'; });                       // local edit racing with the incoming order

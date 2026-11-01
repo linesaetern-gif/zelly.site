@@ -71,6 +71,12 @@ hPanel → **Websites → Add Website → Node.js Apps → Import Git Repository
 
 ตรวจการเชื่อมต่อฐานข้อมูลจาก SSH ได้ด้วย `npm run dbcheck`
 
+## ติดตั้งเป็นแอป (PWA)
+- เปิดเว็บบน **HTTPS** (Hostinger เปิด SSL ให้) แล้วจะมีปุ่ม **"ติดตั้งแอป"** ลอยมุมซ้ายล่าง (Android/Chrome/Edge/เดสก์ท็อป กดแล้วติดตั้งทันที; iPhone/iPad แสดงวิธี "เพิ่มไปยังหน้าจอโฮม" ของ Safari) กด × เพื่อซ่อน 7 วัน
+- หน้าแอดมิน/เจ้าของร้านติดตั้งเป็นแอป **Zelly**; หน้าร้านลูกค้า `/s/ชื่อร้าน` ติดตั้งเป็นแอป **ของร้านนั้น** (ชื่อร้าน, สีธีมของร้าน) — เจ้าของส่งลิงก์ให้ลูกค้ากดติดตั้งไว้สั่งซื้อซ้ำได้
+- แอปไม่เก็บหน้าเว็บหรือข้อมูลไว้ในเครื่อง (ราคา/สต็อกสดเสมอ) ถ้าไม่มีอินเทอร์เน็ตจะแสดงหน้า "ออฟไลน์" แทน — ยังไม่รองรับใช้งานออฟไลน์ และไม่มีการแจ้งเตือน push
+- ไอคอนอยู่ที่ `public/icons/` (เปลี่ยนเป็นโลโก้ใหม่ได้โดยแทนที่ไฟล์ชื่อเดิม); ถ้าแก้ `public/sw.js` ให้เปลี่ยนเลขเวอร์ชัน `V` ในไฟล์ด้วย
+
 ## ชำระค่าแพ็กเกจออนไลน์ (BCEL OnePay QR ผ่าน PhaJay)
 
 **หลักการ:** BCEL ไม่มี API สาธารณะให้ร้านค้าเชื่อมต่อโดยตรง จึงใช้ตัวกลางชำระเงิน [PhaJay](https://phajay.co) (รองรับ QR ของ BCEL OnePay) — ผู้ใช้สแกน QR ด้วยแอป **BCEL One** เท่านั้น (ไม่ใช่ QR กลาง LAO QR). ถ้าภายหลังทำสัญญากับ BCEL/LAPNet โดยตรง ให้แก้เฉพาะไฟล์ `lib/payments.js` (มี 4 ฟังก์ชัน: `online`, `createQr`, `status`, `verifyWebhook`) ส่วนอื่นไม่ต้องแก้
@@ -81,6 +87,7 @@ hPanel → **Websites → Add Website → Node.js Apps → Import Git Repository
 3. ใน Hostinger → Environment variables ใส่
    - `PHAJAY_SECRET_KEY` = secretKey (หรือ devSecretKey)
    - `PHAJAY_WEBHOOK_KEY` = (ไม่บังคับ) คีย์ที่ PhaJay ใช้เซ็น webhook ถ้าต่างจากด้านบน คั่นหลายค่าด้วย `,` — ระบบยอมรับทั้ง `PHAJAY_SECRET_KEY` และ `PHAJAY_DEV_SECRET_KEY` อยู่แล้ว เพื่อไม่ให้พังตอนเปลี่ยนจาก dev เป็น KYC จริง
+   - **โหมดทดสอบ (sandbox):** ถ้าใช้คีย์ทดสอบ ให้ตั้ง `PHAJAY_SANDBOX=1` ด้วย (ระบบจะเรียก `/v1/api/test/payment/...` ตามเอกสาร PhaJay) และ QR ทดสอบต้องสแกนด้วยแอป **PhaJay** ไม่ใช่แอปธนาคารจริง. คีย์ทดสอบใช้กับ endpoint จริง (production) ไม่ได้ และ secretKey จริงจะออกให้หลังผ่าน KYC เท่านั้น — เมื่อสร้าง QR ไม่ได้ หน้าจอจะแสดงเหตุผลจาก PhaJay ในวงเล็บ
    - (ไม่บังคับ) `PHAJAY_BANK=bcel` (ค่าเริ่มต้น), `PHAJAY_BASE` (ค่าเริ่มต้น `https://payment-gateway.phajay.co`)
 4. ในพอร์ทัล PhaJay ตั้ง **Webhook URL** เป็น `https://โดเมนของคุณ/api/webhooks/phajay`
 5. Restart แอป → เข้าสู่ระบบเป็น Super Admin → แท็บ **นโยบาย** ต้องเห็น "ชำระออนไลน์ … พร้อมใช้งาน"
@@ -105,6 +112,7 @@ node server.js       # ใช้ไฟล์ SQLite ที่ data/zelly.sqlite 
 npm test             # ทดสอบ logic + API
 npm run test:e2e     # ทดสอบบนเบราว์เซอร์ (ต้องมี playwright)
 node test/e2e_pay.js # ทดสอบหน้าชำระออนไลน์บนเบราว์เซอร์ (ใช้ตัวกลางจำลอง)
+node test/e2e_pwa.js # ทดสอบการติดตั้งแอป (PWA)
 ```
 เปิด http://localhost:3000 — ถ้าไม่ตั้ง `ADMIN_PASSWORD` ระบบสุ่มรหัสให้และพิมพ์ในหน้าจอ terminal
 

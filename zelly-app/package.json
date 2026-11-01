@@ -8,7 +8,7 @@
     "start": "node server.js",
     "test": "node test/run.js",
     "dbcheck": "node scripts/dbcheck.js",
-    "test:e2e": "node test/e2e.js && node test/e2e_pay.js"
+    "test:e2e": "node test/e2e.js && node test/e2e_pay.js && node test/e2e_pwa.js"
   },
   "engines": {
     "node": ">=20"

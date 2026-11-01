@@ -53,7 +53,7 @@ route('POST', '/api/billing/pay', async ctx => {
     if (r.status === 'paid') return { code: 400, body: { error: 'pay.done' } };
     const fresh = r.pay && r.pay.txId && Date.now() - r.pay.at < 10 * 60e3 && !ctx.body.force;
     if (!fresh) {
-      let q; try { q = await Pay.createQr({ amount: r.amount, order: r.id, description: 'Zelly ' + r.id }); } catch (e) { console.error('[pay] createQr', e.message); return { code: 502, body: { error: 'pay.fail' } }; }
+      let q; try { q = await Pay.createQr({ amount: r.amount, order: r.id, description: 'Zelly ' + r.id }); } catch (e) { console.error('[pay] createQr', e.message); return { code: 502, body: { error: 'pay.fail', detail: String(e.message).slice(0, 160) } }; }
       r.pay = { provider: 'phajay', txId: q.txId, qr: q.qr, link: q.link, at: Date.now() };
       r.txIds = (r.txIds || []).concat(q.txId).slice(-10);
       if (r.status === 'expired' || r.status === 'rejected') r.status = 'pending';

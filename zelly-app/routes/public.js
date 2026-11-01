@@ -111,6 +111,27 @@ route('POST', '/api/public/track', async ctx => {
   send(ctx.res, 200, { orders, member, thread });
 });
 
+/* each shop can be installed as its own app: /manifest/<slug>.webmanifest */
+route('GET', '/manifest/:slug', async ctx => {
+  const slug = String(ctx.params.slug).replace(/\.webmanifest$/, '').toLowerCase();
+  let c; try { c = await shopCtx(slug); } catch (e) { throw new HttpError(404, 'shop'); }
+  const w = await M.getOwnerDoc(c.ownerId), st = w.doc.stores.find(s => s.id === c.storeId); if (!st) throw new HttpError(404, 'shop');
+  const nm = M.clip(typeof st.name === 'object' ? (st.name.lo || st.name.th || st.name.en) : st.name, 60) || 'Zelly', col = /^#[0-9a-f]{6}$/i.test(st.color || '') ? st.color : '#2563eb', sp = '/s/' + encodeURIComponent(slug);
+  const m = { id: sp, name: nm, short_name: nm.slice(0, 12), description: nm, start_url: sp, scope: '/', display: 'standalone', background_color: '#ffffff', theme_color: col, icons: [
+    { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] };
+  const b = JSON.stringify(m); ctx.res.writeHead(200, { 'Content-Type': 'application/manifest+json; charset=utf-8', 'Content-Length': Buffer.byteLength(b), 'Cache-Control': 'public, max-age=300' }); ctx.res.end(b);
+});
+/* old-style tracking links  /t/<order id>  (no shop in the URL): send the visitor to the one shop that owns that id, else home */
+route('GET', '/t/:id', async ctx => {
+  const id = String(ctx.params.id).slice(0, 30), loc = p => { ctx.res.writeHead(302, { Location: p, 'Cache-Control': 'no-store' }); ctx.res.end(); };
+  if (!/^[A-Za-z0-9-]+$/.test(id) || !U.rateLimit('tl:' + U.ip(ctx.req), 60, 600e3)) return loc('/');
+  const rows = await q("SELECT id, json FROM docs WHERE id LIKE 'd:%' AND json LIKE ?", ['%"id":"' + id + '"%']), hits = [];
+  for (const r of rows) {
+    const d = JSON.parse(r.json), o = (d.orders || []).find(x => x.id === id); if (!o) continue;
+    const s = await q('SELECT slug FROM shops WHERE owner_id = ? AND store_id = ?', [r.id.slice(2), o.store]); if (s[0]) hits.push(s[0].slug);
+  }
+  loc(hits.length === 1 ? '/s/' + encodeURIComponent(hits[0]) + '?track=' + encodeURIComponent(id) : '/');
+});
 route('GET', '/b/:id', async ctx => {
   const id = ctx.params.id; if (!/^[a-f0-9]{40}$/.test(id)) throw new HttpError(404, 'nf');
   const b = await B.get(id); if (!b) throw new HttpError(404, 'nf');

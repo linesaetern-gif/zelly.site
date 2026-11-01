@@ -7,6 +7,7 @@ const cfg = () => ({
   key: process.env.PHAJAY_SECRET_KEY || '',
   hook: [process.env.PHAJAY_WEBHOOK_KEY, process.env.PHAJAY_SECRET_KEY, process.env.PHAJAY_DEV_SECRET_KEY].filter(Boolean).join(',').split(',').map(s => s.trim()).filter(Boolean),
   base: (process.env.PHAJAY_BASE || 'https://payment-gateway.phajay.co').replace(/\/+$/, ''),
+  sandbox: /^(1|true|yes)$/i.test(process.env.PHAJAY_SANDBOX || ''),
   bank: (process.env.PHAJAY_BANK || 'bcel').toLowerCase().replace(/[^a-z]/g, '')
 });
 const online = () => { const c = cfg(); return c.provider === 'phajay' && !!c.key; };
@@ -26,11 +27,11 @@ function call(method, url, headers, body) {
 /* amount in LAK (integer). order = our request id. Returns { txId, qr, link } */
 async function createQr({ amount, order, description }) {
   const c = cfg(); if (!online()) throw new Error('online payment is not configured');
-  const r = await call('POST', c.base + '/v1/api/payment/generate-' + c.bank + '-qr', { secretKey: c.key }, {
-    amount: Math.round(amount), description: String(description || order).replace(/[^\x20-\x7e]/g, '').slice(0, 60) || order, orderNo: order, tag1: order
+  const r = await call('POST', c.base + (c.sandbox ? '/v1/api/test' : '/v1/api') + '/payment/generate-' + c.bank + '-qr', { secretKey: c.key }, {
+    amount: Math.round(amount), description: String(description || order).replace(/[^\x20-\x7e]/g, '').slice(0, 60) || order, orderNo: order, tag1: order, tag3: order
   });
   const j = r.json || {};
-  if (r.code >= 300 || !j.transactionId || !j.qrCode) throw new Error('gateway: ' + (j.message || r.code));
+  if (r.code >= 300 || !j.transactionId || !j.qrCode) throw new Error('gateway ' + r.code + ': ' + String(j.message || j.error || r.text || '').slice(0, 120) + (c.sandbox ? ' [sandbox]' : ''));
   return { txId: String(j.transactionId), qr: String(j.qrCode), link: j.link ? String(j.link) : '' };
 }
 

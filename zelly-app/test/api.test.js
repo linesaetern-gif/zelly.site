@@ -35,6 +35,17 @@ async function call(who, method, url, body) {
   assert.equal(r.s, 200, JSON.stringify(r.j)); const oid = r.j.order.id; assert(!('cost' in (r.j.order.items[0])), 'order cost leaked');
   r = await call('', 'POST', '/api/public/order', { shop: 'noyshop', lines: [{ sku: 'T-1', qty: 99 }], cust: { name: 'Buyer', phone: '020 9999 8888', address: 'V', pay: 'cod' } }); assert.equal(r.s, 400); assert.equal(r.j.error, 'e.short');
   r = await call('', 'POST', '/api/public/track', { shop: 'noyshop', orders: [{ id: oid, phone: '02099998888' }, { id: oid, phone: '1112223334' }] }); assert.equal(r.j.orders.length, 1);
+  /* old-style tracking link /t/<id> redirects to the owning shop */
+  { const rr = await fetch(base + '/t/' + oid, { redirect: 'manual' }); assert.equal(rr.status, 302); assert.equal(rr.headers.get('location'), '/s/noyshop?track=' + oid);
+    const r2 = await fetch(base + '/t/SK-999999', { redirect: 'manual' }); assert.equal(r2.headers.get('location'), '/'); const r3 = await fetch(base + '/t/%27%20OR%201', { redirect: 'manual' }); assert.equal(r3.headers.get('location'), '/'); }
+  /* PWA: manifests, service worker, head links */
+  { let m = await fetch(base + '/manifest.webmanifest'); assert.equal(m.status, 200); let j = await m.json(); assert.equal(j.display, 'standalone'); assert(j.icons.some(i => i.purpose === 'maskable'));
+    m = await fetch(base + '/manifest/noyshop.webmanifest'); assert.equal(m.status, 200); j = await m.json(); assert.equal(j.start_url, '/s/noyshop'); assert.equal(j.name, 'Noy Shop'); assert.equal(j.id, '/s/noyshop');
+    assert.equal((await fetch(base + '/manifest/nope.webmanifest')).status, 404);
+    const sw = await fetch(base + '/sw.js'); assert.equal(sw.status, 200); assert(/javascript/.test(sw.headers.get('content-type'))); assert.equal(sw.headers.get('cache-control'), 'no-cache');
+    for (const f of ['/icons/icon-192.png', '/icons/icon-512.png', '/icons/maskable-512.png', '/icons/apple-touch-180.png', '/offline.html', '/favicon.svg']) assert.equal((await fetch(base + f)).status, 200, f);
+    const h1 = await (await fetch(base + '/')).text(), h2 = await (await fetch(base + '/s/noyshop')).text();
+    assert(h1.includes('href="/manifest.webmanifest"') && h1.includes('apple-touch-icon')); assert(h2.includes('href="/manifest/noyshop.webmanifest"')); }
   /* owner sees order, concurrent edit merges */
   r = await call('o', 'GET', '/api/workspace'); assert(r.j.d.doc.orders.some(o => o.id === oid)); assert.equal(r.j.d.doc.stock.w1['T-1'], 8);
   const d2 = JSON.parse(JSON.stringify(d)); d2.products[0].name = 'Tee v2';           /* stale base: no order inside */

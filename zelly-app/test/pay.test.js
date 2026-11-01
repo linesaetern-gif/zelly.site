@@ -49,7 +49,7 @@ function phajay() {
   const server = http.createServer((req, res) => {
     let b = ''; req.on('data', c => b += c); req.on('end', () => {
       const out = (code, o) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(o)); };
-      if (req.method === 'POST' && req.url === '/v1/api/payment/generate-bcel-qr') {
+      if (req.method === 'POST' && (req.url === '/v1/api/payment/generate-bcel-qr' || (process.env.PHAJAY_SANDBOX === '1' && req.url === '/v1/api/test/payment/generate-bcel-qr'))) {
         if (req.headers.secretkey !== 'sk_test') return out(401, { message: 'UNAUTHORIZED' });
         const j = JSON.parse(b); calls.push(j); const id = 'TX' + (n++); tx[id] = { amount: j.amount, orderNo: j.orderNo, paid: false, report: j.amount };
         return out(200, { message: 'SUCCESSFULLY', transactionId: id, qrCode: '00020101021133730004BCEL' + id, link: 'onepay://qr/' + id });
@@ -196,9 +196,12 @@ const today = () => ymd(new Date(Date.now() + 7 * 36e5));
   r = await call('by', 'POST', '/api/admin/mailtest', {}); assert(r.s === 403);
   r = await call('sa', 'POST', '/api/admin/mailtest', { lang: 'en' }); assert.equal(r.s, 200, JSON.stringify(r.j)); assert(mailTo('root@test.io', /Zelly test email/));
 
+  /* --- sandbox key against the production path is refused by the gateway; PHAJAY_SANDBOX=1 switches to the /test/ path --- */
+  r = await call('by', 'POST', '/api/billing/request', { planId: 'basic', months: 1 }); const ridS = r.j.id; process.env.PHAJAY_SANDBOX = '1';
+  r = await call('by', 'POST', '/api/billing/pay', { id: ridS }); assert.equal(r.s, 200, JSON.stringify(r.j)); assert(r.j.pay.qr.includes('BCEL')); delete process.env.PHAJAY_SANDBOX;
   /* --- gateway down: pay returns an error, no crash --- */
   process.env.PHAJAY_BASE = 'http://127.0.0.1:1'; r = await call('by', 'POST', '/api/billing/request', { planId: 'basic', months: 1 });
-  r = await call('by', 'POST', '/api/billing/pay', { id: r.j.id }); assert.equal(r.s, 502); assert.equal(r.j.error, 'pay.fail');
+  r = await call('by', 'POST', '/api/billing/pay', { id: r.j.id }); assert.equal(r.s, 502); assert.equal(r.j.error, 'pay.fail'); assert(/ECONNREFUSED/.test(r.j.detail), 'reason must be reported');
   /* --- not configured --- */
   delete process.env.PHAJAY_SECRET_KEY; r = await call('by', 'GET', '/api/workspace'); assert.equal(r.j.plat.online, false);
   r = await call('by', 'POST', '/api/billing/pay', { id: 'REQ-1' }); assert.equal(r.s, 503);
