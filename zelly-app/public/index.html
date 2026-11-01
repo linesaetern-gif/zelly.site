@@ -788,6 +788,23 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-conten
 #pwa-chip button{background:none;border:0;color:inherit;font:600 14px inherit;cursor:pointer;display:flex;align-items:center;gap:6px;padding:10px 6px 10px 14px}
 #pwa-chip .pwa-x{padding:10px 12px 10px 4px;font-size:18px;line-height:1;opacity:.8}
 @media print{#pwa-chip{display:none}}
+
+.sheet.wiz{top:0;bottom:0;transform:none;max-width:none;max-height:none;height:100%;height:100dvh;border-radius:0}
+.sheet.wiz .sheet-h,.sheet.wiz .sheet-b,.sheet.wiz .sheet-f{width:100%;max-width:520px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+.sheet.wiz .sheet-b{flex:1;gap:16px;padding-top:8px}
+.sheet.wiz .sheet-f{border-top:0}
+.wz-prog{display:flex;gap:6px}.wz-prog i{flex:1;height:5px;border-radius:3px;background:var(--line)}.wz-prog i.on{background:var(--brand)}
+.wz-types{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.wz-type{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;padding:8px 8px 12px;border:1.5px solid var(--line);border-radius:16px;background:var(--surface);color:var(--fg);font:600 15px inherit;cursor:pointer;transition:border-color .15s,background .15s}
+.wz-type img{display:block;width:100%;height:auto;aspect-ratio:4/3;border-radius:11px;background:var(--surface-2,#f1f3f7);pointer-events:none;-webkit-user-drag:none}
+.wz-type[aria-pressed="true"]{box-shadow:0 0 0 2px var(--brand);border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.wz-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px 0 4px}.wz-hero h1{font-size:26px;margin:4px 0 0}
+.wz-ok{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.wz-todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.wz-todo li{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.wz-todo li svg{color:var(--brand);flex:none}
+input[type=email],input[type=password]{width:100%;min-height:40px;padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);font:inherit}
+.sheet.wiz input[type=text],.sheet.wiz input[type=email],.sheet.wiz input[type=tel],.sheet.wiz input[type=password],.sheet.wiz select{min-height:46px;font-size:16px}
+
+.pw-open{width:100%;justify-content:flex-start;gap:10px}
 </style>
 
 <div id="app"></div>
@@ -2263,6 +2280,67 @@ Object.assign(T, {
   'pwa.ios1': ["ເປີດໜ້ານີ້ໃນ Safari ແລ້ວກົດປຸ່ມແຊຣ໌ (ສີ່ຫຼ່ຽມມີລູກສອນຊີ້ຂຶ້ນ)", "เปิดหน้านี้ใน Safari แล้วแตะปุ่มแชร์ (สี่เหลี่ยมมีลูกศรชี้ขึ้น)", "Open this page in Safari and tap the Share button (the square with an arrow)"],
   'pwa.ios2': ["ເລື່ອນລົງ ແລ້ວເລືອກ “ເພີ່ມໃສ່ໜ້າຈໍຫຼັກ”", "เลื่อนลงแล้วเลือก “เพิ่มไปยังหน้าจอโฮม”", "Scroll down and choose “Add to Home Screen”"],
   'pwa.ios3': ["ກົດ “ເພີ່ມ” ແອັບຈະຢູ່ໃນໜ້າຈໍຫຼັກ", "แตะ “เพิ่ม” แอปจะอยู่บนหน้าจอโฮม", "Tap “Add” and the app appears on your Home Screen"],
+  'wz.step': ["ຂັ້ນຕອນ {n}/{m}", "ขั้นที่ {n}/{m}", "Step {n} of {m}"],
+  'wz.s1.title': ["ເລີ່ມຕົ້ນກັບ Zelly", "เริ่มต้นกับ Zelly", "Get started with Zelly"],
+  'wz.s1.sub': ["ໃສ່ອີເມວຂອງທ່ານເພື່ອສ້າງບັນຊີຟຣີ", "ใส่อีเมลของคุณเพื่อสร้างบัญชีฟรี", "Enter your email to create a free account"],
+  'wz.start': ["ເລີ່ມຟຣີ", "เริ่มฟรี", "Start free"],
+  'wz.s2.title': ["ບອກເຮົາກ່ຽວກັບທ່ານ", "บอกเราเกี่ยวกับคุณ", "Tell us about you"],
+  'wz.s2.sub': ["ຂໍ້ມູນພື້ນຖານຂອງຜູ້ໃຊ້ ແລະ ຮ້ານຄ້າ", "ข้อมูลพื้นฐานของผู้ใช้และร้านค้า", "Basic details about you and your shop"],
+  'wz.uname': ["ຊື່ຜູ້ໃຊ້", "ชื่อผู้ใช้", "Your name"],
+  'wz.shopname': ["ຊື່ຮ້ານ", "ชื่อร้าน", "Shop name"],
+  'wz.errName': ["ກະລຸນາໃສ່ຊື່ຜູ້ໃຊ້", "กรุณากรอกชื่อผู้ใช้", "Please enter your name"],
+  'wz.errShop': ["ກະລຸນາໃສ່ຊື່ຮ້ານ", "กรุณากรอกชื่อร้าน", "Please enter your shop name"],
+  'wz.s3.title': ["ຕັ້ງລະຫັດຜ່ານ", "ตั้งรหัสผ่าน", "Set a password"],
+  'wz.s3.sub': ["ໃຊ້ຢ່າງໜ້ອຍ 6 ຕົວອັກສອນ", "ใช้อย่างน้อย 6 ตัวอักษร", "Use at least 6 characters"],
+  'wz.pass2': ["ຢືນຢັນລະຫັດຜ່ານ", "ยืนยันรหัสผ่าน", "Confirm password"],
+  'wz.errMatch': ["ລະຫັດຜ່ານບໍ່ກົງກັນ", "รหัสผ่านไม่ตรงกัน", "Passwords do not match"],
+  'wz.s4.title': ["ຮ້ານຂອງທ່ານຂາຍຫຍັງ?", "ร้านของคุณขายอะไร?", "What does your shop sell?"],
+  'wz.s4.sub': ["ເລືອກປະເພດຮ້ານຄ້າ", "เลือกประเภทร้านค้า", "Pick a shop type"],
+  'wz.errType': ["ກະລຸນາເລືອກປະເພດຮ້ານ", "กรุณาเลือกประเภทร้านค้า", "Please pick a shop type"],
+  'wz.s5.title': ["ຮູບໂປຣໄຟລ໌", "รูปโปรไฟล์", "Profile picture"],
+  'wz.s5.sub': ["ເພີ່ມຮູບເພື່ອໃຫ້ລູກຄ້າຈື່ທ່ານໄດ້ (ຂ້າມໄດ້)", "เพิ่มรูปเพื่อให้ลูกค้าจำคุณได้ (ข้ามได้)", "Add a photo so customers recognise you (optional)"],
+  'wz.skip': ["ຂ້າມ", "ข้าม", "Skip"],
+  'wz.s6.title': ["ທີ່ຢູ່ຂອງທ່ານ", "ที่อยู่ของคุณ", "Your address"],
+  'wz.s6.sub': ["ແຂວງ ເມືອງ ແລະ ບ້ານ ໃນ ສປປ ລາວ", "แขวง เมือง และบ้าน ใน สปป.ลาว", "Province, district and village in Laos"],
+  'wz.prov': ["ແຂວງ", "แขวง", "Province"],
+  'wz.provPick': ["— ເລືອກແຂວງ —", "— เลือกแขวง —", "— Select province —"],
+  'wz.dist': ["ເມືອງ", "เมือง", "District"],
+  'wz.vill': ["ບ້ານ", "บ้าน", "Village"],
+  'wz.passAgain': ["ເພື່ອຄວາມປອດໄພ ກະລຸນາຕັ້ງລະຫັດຜ່ານອີກຄັ້ງ (ລະບົບບໍ່ເກັບລະຫັດຜ່ານໄວ້ໃນເຄື່ອງ)", "เพื่อความปลอดภัย กรุณาตั้งรหัสผ่านอีกครั้ง (ระบบไม่เก็บรหัสผ่านไว้ในเครื่อง)", "For your security, please set your password again (it is never saved on this device)."],
+  'prof.pwSec': ["ຄວາມປອດໄພ", "ความปลอดภัย", "Security"],
+  'prof.pwBtn': ["ປ່ຽນລະຫັດຜ່ານ", "เปลี่ยนรหัสผ่าน", "Change password"],
+  'prof.pwIntro': ["ກະລຸນາໃສ່ລະຫັດຜ່ານປັດຈຸບັນ ແລ້ວຕັ້ງລະຫັດຜ່ານໃໝ່", "กรอกรหัสผ่านปัจจุบัน แล้วตั้งรหัสผ่านใหม่", "Enter your current password, then choose a new one."],
+  'prof.pwDone': ["ປ່ຽນລະຫັດຜ່ານແລ້ວ", "เปลี่ยนรหัสผ่านแล้ว", "Password changed"],
+  'wz.errProv': ["ກະລຸນາເລືອກແຂວງ", "กรุณาเลือกแขวง", "Please select a province"],
+  'wz.errDist': ["ກະລຸນາໃສ່ເມືອງ", "กรุณากรอกเมือง", "Please enter your district"],
+  'wz.next': ["ຕໍ່ໄປ", "ถัดไป", "Next"],
+  'wz.back': ["ກັບຄືນ", "ย้อนกลับ", "Back"],
+  'wz.finish': ["ສຳເລັດ", "เสร็จสิ้น", "Finish"],
+  'wz.w.title': ["ຍິນດີຕ້ອນຮັບສູ່ Zelly!", "ยินดีต้อนรับสู่ Zelly!", "Welcome to Zelly!"],
+  'wz.w.sub': ["ບັນຊີຂອງທ່ານພ້ອມແລ້ວ ເລີ່ມສ້າງຮ້ານໄດ້ເລີຍ", "บัญชีของคุณพร้อมแล้ว เริ่มสร้างร้านได้เลย", "Your account is ready. Let's build your shop."],
+  'wz.w.1': ["ສ້າງຮ້ານ ແລະ ເລືອກສີ", "สร้างร้านและเลือกสี", "Create your shop and pick a colour"],
+  'wz.w.2': ["ເພີ່ມສິນຄ້າ ແລະ ສະຕັອກ", "เพิ่มสินค้าและสต๊อก", "Add products and stock"],
+  'wz.w.3': ["ແບ່ງປັນລິ້ງຮ້ານໃຫ້ລູກຄ້າ", "แชร์ลิงก์ร้านให้ลูกค้า", "Share your shop link with customers"],
+  'wz.enter': ["ເຂົ້າສູ່ໂປຣແກຣມ", "เข้าสู่โปรแกรม", "Enter Zelly"],
+  'wz.p.title': ["ໄດ້ຮັບຄຳຂໍສະໝັກແລ້ວ", "ได้รับคำขอสมัครแล้ว", "Request received"],
+  'wz.pv.vtc': ["ນະຄອນຫຼວງວຽງຈັນ", "นครหลวงเวียงจันทน์", "Vientiane Capital"],
+  'wz.pv.pho': ["ຜົ້ງສາລີ", "ผงสาลี", "Phongsaly"],
+  'wz.pv.lnt': ["ຫຼວງນ້ຳທາ", "หลวงน้ำทา", "Luang Namtha"],
+  'wz.pv.bok': ["ບໍ່ແກ້ວ", "บ่อแก้ว", "Bokeo"],
+  'wz.pv.oud': ["ອຸດົມໄຊ", "อุดมไซ", "Oudomxay"],
+  'wz.pv.lpb': ["ຫຼວງພະບາງ", "หลวงพระบาง", "Luang Prabang"],
+  'wz.pv.hou': ["ຫົວພັນ", "หัวพัน", "Houaphanh"],
+  'wz.pv.say': ["ໄຊຍະບູລີ", "ไชยบุรี", "Sayabouly"],
+  'wz.pv.xkh': ["ຊຽງຂວາງ", "เชียงขวาง", "Xieng Khouang"],
+  'wz.pv.vte': ["ວຽງຈັນ", "เวียงจันทน์", "Vientiane Province"],
+  'wz.pv.blx': ["ບໍລິຄຳໄຊ", "บอลิคำไซ", "Bolikhamxay"],
+  'wz.pv.kha': ["ຄຳມ່ວນ", "คำม่วน", "Khammouane"],
+  'wz.pv.svk': ["ສະຫວັນນະເຂດ", "สะหวันนะเขต", "Savannakhet"],
+  'wz.pv.slv': ["ສາລະວັນ", "สาละวัน", "Salavan"],
+  'wz.pv.sek': ["ເຊກອງ", "เซกอง", "Sekong"],
+  'wz.pv.chm': ["ຈຳປາສັກ", "จำปาสัก", "Champasak"],
+  'wz.pv.att': ["ອັດຕະປື", "อัตตะปือ", "Attapeu"],
+  'wz.pv.xai': ["ໄຊສົມບູນ", "ไชยสมบูรณ์", "Xaisomboun"],
   'api.loading': ["ກຳລັງໂຫຼດ…", "กำลังโหลด…", "Loading…"]
 });
 /* ================= data (example data, kept in memory) ================= */
@@ -2659,7 +2737,7 @@ function doSignup(f) {
   if (!PLAT.settings.signupOpen) return { err: t('au.closed') };
   if (userByEmail(f.email)) return { err: t('au.exists') };
   const st = PLAT.settings, trial = st.trialDays > 0 && planOf(st.trialPlan) && st.trialPlan !== 'free';
-  const u = { id: 'u' + (PLAT.seq.user++), role: 'owner', name: f.name, biz: f.biz, email: f.email, phone: f.phone, pass: f.pass, planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? addDays(st.trialDays) : '', joined: Date.now(), note: '', refBy: (PLAT.settings.aff && PLAT.settings.aff.on && f.refBy) || '' };
+  const u = { id: 'u' + (PLAT.seq.user++), role: 'owner', name: f.name, biz: f.biz, email: f.email, phone: f.phone, pass: f.pass, planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? addDays(st.trialDays) : '', joined: Date.now(), note: '', refBy: (PLAT.settings.aff && PLAT.settings.aff.on && f.refBy) || '', bizType: f.bizType || '', img: f.img || '', prov: f.prov || '', dist: f.dist || '', vill: f.vill || '', addr: f.addr || '' };
   PLAT.users.push(u);
   if (u.status === 'pending') return { pending: true };
   enterUser(u); return { u, trial };
@@ -2823,7 +2901,7 @@ function sheetContent() {
     }
     case 'profile': return profileSheet();
     case 'store': {
-      const s = sh.id ? store(sh.id) : { name: '', slug: '', type: 'fashion', wh: D.warehouses[0].id, color: SWATCHES[0], tagline: '', layout: 'grid', shipFee: 20000, freeShipMin: 500000 };
+      const s = sh.id ? store(sh.id) : { name: D.stores.length ? '' : (curUser().biz || ''), slug: '', type: TYPE_KEYS.includes(curUser().bizType) ? curUser().bizType : 'fashion', wh: D.warehouses[0].id, color: SWATCHES[0], tagline: '', layout: 'grid', shipFee: 20000, freeShipMin: 500000 };
       const simg = sh.img !== undefined ? sh.img : (s.img || ''), tag = L(s.tagline), types = TYPE_KEYS.slice(); if (!types.includes(s.type)) types.unshift(s.type);
       return { t: sh.id ? t('sf.edit') : t('sf.create'), b: '<form id="f-store" data-form="store" data-live class="stack" novalidate>' +
         '<div class="mini" id="sp">' + (simg ? '<div class="avatar has-img" id="sp-av"><img src="' + esc(simg) + '" alt=""></div>' : '<div class="avatar" id="sp-av" style="background:' + s.color + ';color:' + ink(s.color) + '">' + esc((s.name || 'S').charAt(0).toUpperCase()) + '</div>') + '<div class="grow"><b id="sp-name">' + esc(s.name || t('sf.namePh')) + '</b><div class="xs muted" id="sp-tag">' + esc(tag || t('sf.tagPh')) + '</div></div></div>' +
@@ -2902,12 +2980,13 @@ function sheetContent() {
   }
   return sheetContent2(sh);
 }
-function renderSheet() {
+function renderSheet() { renderSheetMain(); if (typeof wizSync === 'function') wizSync(); }
+function renderSheetMain() {
   const host = $('#sheet');
   if (!S.sheet) { host.innerHTML = ''; host.dataset.k = ''; if (typeof afterSheet12 === 'function') afterSheet12(); return; }
   const old = host.querySelector('.sheet-b'), sc = old ? old.scrollTop : 0, same = host.dataset.k === S.sheet.k;
   const c = sheetContent(), st = c.shop ? store(c.shop) : null;
-  host.innerHTML = '<div class="scrim" data-act="close"></div><section class="sheet' + (st ? ' shop' : '') + '"' + (st ? ' style="--th:' + st.color + ';--th-ink:' + ink(st.color) + '"' : '') + ' role="dialog" aria-modal="true" aria-label="' + esc(c.t) + '" tabindex="-1"><div class="sheet-h"><h2>' + esc(c.t) + '</h2><button class="iconbtn" data-act="close" aria-label="' + esc(t('close')) + '">' + ico('x') + '</button></div><div class="sheet-b">' + c.b + '</div>' + (c.f ? '<div class="sheet-f">' + c.f + '</div>' : '') + '</section>';
+  host.innerHTML = '<div class="scrim" data-act="close"></div><section class="sheet' + (st ? ' shop' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (st ? ' style="--th:' + st.color + ';--th-ink:' + ink(st.color) + '"' : '') + ' role="dialog" aria-modal="true" aria-label="' + esc(c.t) + '" tabindex="-1"><div class="sheet-h"><h2>' + esc(c.t) + '</h2><button class="iconbtn" data-act="close" aria-label="' + esc(t('close')) + '">' + ico('x') + '</button></div><div class="sheet-b">' + c.b + '</div>' + (c.f ? '<div class="sheet-f">' + c.f + '</div>' : '') + '</section>';
   if (typeof afterSheet9 === 'function') afterSheet9();
   if (typeof afterSheet12 === 'function') afterSheet12();
   if (same) host.querySelector('.sheet-b').scrollTop = sc;
@@ -3070,15 +3149,7 @@ function sheetContent2(sh) {
       return { t: t('au.login'), b: '<form id="f-login" data-form="login" class="stack" novalidate>' + field(t('au.email'), '<input type="text" name="email" inputmode="email" autocomplete="username" value="' + esc(sh.email || '') + '" required>') + field(t('au.password'), '<input type="password" name="pass" autocomplete="current-password" required>') + '<p class="err" role="alert"></p></form>' +
         (API_MODE ? '' : '<div class="mini sm" style="flex-direction:column;align-items:stretch"><div><b>' + t('au.demo') + '</b><div class="xs muted">' + t('au.demoHint') + '</div></div><div class="row"><button type="button" class="btn sm" data-act="fillacct" data-e="demo@zelly.example" data-p="demo1234">' + t('au.demoOwner') + '</button><button type="button" class="btn sm" data-act="fillacct" data-e="admin@zelly.example" data-p="admin1234">' + t('au.demoAdmin') + '</button><button type="button" class="btn sm" data-act="fillacct" data-e="packer@zelly.example" data-p="staff1234">' + t('stf.demoPacker') + '</button><button type="button" class="btn sm" data-act="fillacct" data-e="support@zelly.example" data-p="staff1234">' + t('stf.demoSupport') + '</button></div></div>'),
         f: '<button class="btn" data-act="authopen" data-m="signup">' + t('au.signup') + '</button><button class="btn pri" type="submit" form="f-login">' + t('au.login') + '</button>' };
-    case 'signup': {
-      const st = PLAT.settings, tp = planOf(st.trialPlan), trial = st.trialDays > 0 && tp && tp.id !== 'free';
-      if (!st.signupOpen) return { t: t('au.signup'), b: '<div class="empty">' + ico('lock', 26) + '<p style="margin-top:8px">' + t('au.closed') + '</p></div>', f: '<button class="btn pri" data-act="close">' + t('close') + '</button>' };
-      return { t: t('au.signup'), b: (trial ? '<div class="mini sm">' + ico('bolt', 18) + '<span>' + t('au.trialNote', { d: st.trialDays, p: esc(L(tp.name)) }) + '</span></div>' : '') +
-        '<form id="f-signup" data-form="signup" class="stack" novalidate>' + field(t('mb.fullname'), '<input type="text" name="name" autocomplete="name" required>') + field(t('au.biz'), '<input type="text" name="biz" autocomplete="organization">') +
-        '<div class="fgrid">' + field(t('au.email'), '<input type="text" name="email" inputmode="email" autocomplete="username" value="' + esc(sh.email || '') + '" required>') + field(t('co.phone'), '<input type="tel" name="phone" inputmode="tel" autocomplete="tel">') + '</div>' + field(t('au.password'), '<input type="password" name="pass" autocomplete="new-password" required>', t('au.passHint')) + (AFF().on ? field(t('af.refField'), '<input type="text" name="ref" maxlength="20" value="' + esc(sh.ref || S.refCode || '') + '" autocapitalize="characters">', t('af.refHint')) : '') +
-        '<label class="check" style="align-items:flex-start"><input type="checkbox" name="agree" style="margin-top:3px"><span class="sm">' + esc(L(st.terms)) + '</span></label><p class="err" role="alert"></p></form>',
-        f: '<button class="btn" data-act="authopen" data-m="login">' + t('au.haveAcct') + '</button><button class="btn pri" type="submit" form="f-signup">' + t('au.signup') + '</button>' };
-    }
+    case 'signup': return signupSheet(sh);
     case 'limit':
       return { t: t('lim.title'), b: '<div style="text-align:center;padding:8px 0">' + ico('lock', 28) + '<p style="margin-top:8px">' + esc(sh.msg) + '</p></div>', f: '<button class="btn" data-act="close">' + t('close') + '</button><button class="btn pri" data-act="tab" data-t="account">' + t('lock.cta') + '</button>' };
     case 'upgrade': {
@@ -3761,6 +3832,7 @@ function saAffiliate() {
     '<section class="card"><h2>' + t('af.saLog') + '</h2>' + (PLAT.commissions.length ? PLAT.commissions.slice(0, 8).map(c => { const f = userById(c.from), r = userById(c.uid); return '<div class="li"><div class="grow"><b>' + esc(r ? (r.biz || r.name) : '-') + '</b> <span class="muted">← ' + esc(f ? (f.biz || f.name) : '-') + '</span><div class="xs muted">' + fmtT(c.t) + ' · ' + money(c.base) + ' × ' + c.pct + '%</div></div><b class="num">' + money(c.amount) + '</b></div>'; }).join('') : '<div class="empty">' + t('af.noCom') + '</div>') + '</section></div></div>';
 }
 /* ================= profile pictures (user account + shop) ================= */
+ICONS.chevR = '<path d="M9 6l6 6-6 6"/>';
 function resizeSquare(file, size, cb) {
   const fr = new FileReader();
   fr.onload = () => {
@@ -3791,9 +3863,8 @@ function profileSheet() {
     '<div class="fgrid">' + field(t('prof.phone'), '<input type="tel" name="phone" maxlength="30" value="' + v('phone') + '" inputmode="tel" autocomplete="tel">') +
     field(t('prof.email'), '<input type="text" name="email" inputmode="email" maxlength="80" value="' + v('email') + '" autocomplete="username"' + (stf ? ' disabled' : '') + '>', t(stf ? 'prof.emailLocked' : 'prof.emailHint')) + '</div>' +
     (stf ? '' : field(t('prof.addr'), '<textarea name="addr" rows="2" maxlength="200" autocomplete="street-address">' + v('addr') + '</textarea>')) +
-    '<h3 style="font-size:16px;margin:6px 0 0">' + t('prof.pwTitle') + '</h3>' +
-    field(t('prof.pwCur'), '<input type="password" name="pwcur" autocomplete="current-password" value="' + v('pwcur') + '">') +
-    '<div class="fgrid">' + field(t('prof.pwNew'), '<input type="password" name="pwnew" autocomplete="new-password" value="' + v('pwnew') + '">', t('stf.passHint')) + field(t('prof.pwConf'), '<input type="password" name="pwconf" autocomplete="new-password" value="' + v('pwconf') + '">') + '</div>' +
+    '<h3 style="font-size:16px;margin:6px 0 0">' + t('prof.pwSec') + '</h3>' +
+    '<button type="button" class="btn pw-open" data-act="pwopen">' + ico('lock', 18) + '<span class="grow" style="text-align:left">' + t('prof.pwBtn') + '</span>' + ico('chevR', 16) + '</button>' +
     '<p class="err" role="alert"></p></form></div>', f: '<button class="btn danger" data-act="logout">' + ico('logout', 16) + t('au.logout') + '</button><button class="btn pri" type="submit" form="f-prof">' + t('save') + '</button>' };
 }
 const storeImgField = img => '<div class="field"><span>' + t('prof.shop') + '</span><div class="row"><div id="si-prev">' + (img ? '<div class="avatar has-img" style="width:56px;height:56px"><img src="' + esc(img) + '" alt=""></div>' : '<div class="avatar" style="width:56px;height:56px;background:var(--surface-2);color:var(--muted)">' + ico('image', 22) + '</div>') + '</div><label class="btn sm"><input class="vh" type="file" accept="image/*" data-chg="storeimg">' + ico('plus', 15) + t(img ? 'prof.change' : 'prof.upload') + '</label>' + (img ? '<button type="button" class="btn sm danger" data-act="storeimgdel">' + t('pay.qrClear') + '</button>' : '') + '</div><small>' + t('prof.shopHint') + '</small></div>';
@@ -4802,6 +4873,8 @@ function profDraft() {
 function act11(a, d, el) {
   switch (a) {
     case 'profimgdel': profDraft(); return false;
+    case 'pwopen': profDraft(); S.sheet = { k: 'pw', draft: S.sheet.draft }; renderSheet(); return true;
+    case 'pwback': S.sheet = { k: 'profile', draft: S.sheet.draft }; renderSheet(); return true;
     case 'newstaff': S.sheet = { k: 'staff-edit', id: '' }; renderSheet(); return true;
     case 'editstaff': S.sheet = { k: 'staff-edit', id: d.id }; renderSheet(); return true;
     case 'askdelstaff': S.sheet.confirm = true; renderSheet(); return true;
@@ -4823,19 +4896,21 @@ function chg11(k, el) {
 }
 function form11(k, f, fd, g) {
   if (k === 'profile') {
-    const u = curUser(), stf = u.role === 'staff', name = g('name'), pw = String(fd.get('pwnew') || ''), email = stf ? u.email : g('email').toLowerCase();
+    const u = curUser(), stf = u.role === 'staff', name = g('name'), email = stf ? u.email : g('email').toLowerCase();
     if (!name) { setErr(f, t('prof.errName')); return true; }
     if (!stf) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr(f, t('stf.errEmail')); return true; }
       const dup = userByEmail(email); if (dup && dup.id !== u.id) { setErr(f, t('stf.errDup')); return true; }
     }
-    if (pw || fd.get('pwcur') || fd.get('pwconf')) {
-      if (String(fd.get('pwcur') || '') !== u.pass) { setErr(f, t('prof.pwBad')); return true; }
-      if (pw.length < 6) { setErr(f, t('stf.errPass')); return true; }
-      if (pw !== String(fd.get('pwconf') || '')) { setErr(f, t('prof.pwMismatch')); return true; }
-    }
-    Object.assign(u, { name, phone: g('phone') }); if (!stf) Object.assign(u, { biz: g('biz'), email, addr: g('addr') }); if (pw) u.pass = pw;
+    Object.assign(u, { name, phone: g('phone') }); if (!stf) Object.assign(u, { biz: g('biz'), email, addr: g('addr') });
     closeSheet(); render(); toast(t('prof.saved')); return true;
+  }
+  if (k === 'pw') {
+    const u = curUser(), pw = String(fd.get('pwnew') || '');
+    if (String(fd.get('pwcur') || '') !== u.pass) { setErr(f, t('prof.pwBad')); return true; }
+    if (pw.length < 6) { setErr(f, t('stf.errPass')); return true; }
+    if (pw !== String(fd.get('pwconf') || '')) { setErr(f, t('prof.pwMismatch')); return true; }
+    u.pass = pw; S.sheet = { k: 'profile', draft: S.sheet.draft }; renderSheet(); toast(t('prof.pwDone')); return true;
   }
   if (k !== 'staff') return false;
   const id = g('id'), perms = fd.getAll('perm').filter(x => STAFF_PERMS.includes(x)), email = g('email').toLowerCase(), pass = String(fd.get('pass') || '').trim();
@@ -4973,6 +5048,9 @@ function zlogo(size) {
 const payLinkOk = u => /^[a-z][a-z0-9+.-]*:\/\//i.test(String(u || '')) && !/^(javascript|data|vbscript|file):/i.test(String(u));
 function payNowBtn(id) { return '<div class="card stack" style="gap:8px;border-color:var(--brand)"><b>' + t('pn.onlineCard') + '</b><p class="xs muted" style="margin:0">' + t('pn.onlineHint') + '</p><button class="btn pri block" data-act="payonline" data-id="' + id + '">' + ico('bolt', 16) + t('pn.payNow') + '</button></div>'; }
 function sheetContent9(sh) {
+  if (sh.k === 'pw') return { t: t('prof.pwBtn'), b: '<form id="f-pw" data-form="pw" class="stack" novalidate><p class="muted sm" style="margin:0">' + t('prof.pwIntro') + '</p>' +
+    field(t('prof.pwCur'), '<input type="password" name="pwcur" autocomplete="current-password" required>') + field(t('prof.pwNew'), '<input type="password" name="pwnew" autocomplete="new-password" required>', t('stf.passHint')) + field(t('prof.pwConf'), '<input type="password" name="pwconf" autocomplete="new-password" required>') + '<p class="err" role="alert"></p></form>',
+    f: '<button class="btn" type="button" data-act="pwback">' + t('wz.back') + '</button><button class="btn pri" type="submit" form="f-pw">' + t('save') + '</button>' };
   if (sh.k === 'pwaios') return { shop: PUBLIC_SHOP(), t: t('pwa.iosTitle'), b: '<ol class="sm" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px"><li>' + t('pwa.ios1') + '</li><li>' + t('pwa.ios2') + '</li><li>' + t('pwa.ios3') + '</li></ol>', f: '<button class="btn pri" data-act="close">' + t('close') + '</button>' };
   if (sh.k === 'trackphone') return { shop: S.shop, t: t('tf.title', { id: esc(sh.id) }), b: '<form id="f-trackphone" data-form="trackphone" class="stack" novalidate><p class="muted sm" style="margin:0">' + t('tf.hint') + '</p>' + field(t('co.phone'), '<input type="tel" name="phone" inputmode="tel" autocomplete="tel" required>') + '<input type="hidden" name="id" value="' + esc(sh.id) + '"><p class="err" role="alert"></p></form>', f: '<button class="btn" data-act="close">' + t('close') + '</button><button class="btn pri" type="submit" form="f-trackphone">' + t('tf.btn') + '</button>' };
   if (sh.k !== 'paynow') return { t: '', b: '' };
@@ -5000,6 +5078,152 @@ function sysStatus() {
 }
 
 function PUBLIC_SHOP() { return API_MODE && window.__ZELLY__ && window.__ZELLY__.shop ? S.shop : undefined; }
+/* generated by gen_types.py — shop-type illustrations as data URIs */
+const WIZ_IMG = {
+  fashion: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMTgwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjcCI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIvPjwvY2xpcFBhdGg+PGZpbHRlciBpZD0iYmwiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjMiLz48L2ZpbHRlcj48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZlOWUzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZjdjOWMwIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImRyIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmY4YTdhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZDY0MDVhIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9InNoIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOWZkMGY1Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNGY4ZmQwIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImZsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZWFjOWE4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjY2ZhNzdkIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9Im10IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZDlkZGUzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGQ5NWExIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NwKSI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIgZmlsbD0idXJsKCNiZykiLz48cmVjdCB5PSIxNTAiIHdpZHRoPSIyNDAiIGhlaWdodD0iMzAiIGZpbGw9InVybCgjZmwpIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSIwIiB5PSIxNDkiIHdpZHRoPSIyNDAiIGhlaWdodD0iMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjM1Ii8+PHBhdGggZD0iTTIyIDI0IEgyMTgiIHN0cm9rZT0idXJsKCNtdCkiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTIyIDIyLjUgSDIxOCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuOCIvPjxwYXRoIGQ9Ik0yMiAyNCBWMTUwIE0yMTggMjQgVjE1MCIgc3Ryb2tlPSIjYjZiY2M2IiBzdHJva2Utd2lkdGg9IjMiIG9wYWNpdHk9Ii41NSIvPjxlbGxpcHNlIGN4PSI4MCIgY3k9IjE1NCIgcng9IjQ2IiByeT0iNSIgZmlsbD0iIzAwMCIgb3BhY2l0eT0iMC4yOCIgZmlsdGVyPSJ1cmwoI2JsKSIvPjxlbGxpcHNlIGN4PSIxNjUiIGN5PSIxNTQiIHJ4PSI0MiIgcnk9IjUiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMjgiIGZpbHRlcj0idXJsKCNibCkiLz48Zz48cGF0aCBkPSJNODAgMjQgdjgiIHN0cm9rZT0iIzhkOTVhMSIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik04MCAzNCBMNTQgNTIgUTUyIDU1IDU2IDU1IEgxMDQgUTEwOCA1NSAxMDYgNTIgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmQ3NTgxIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik02NyA1NSBRNjggNTcgNzAgNTggTDgwIDY5IEw5MCA1OCBROTIgNTcgOTMgNTUgTDk1IDgyIFExMDggMTEyIDEyMiAxNDggUTgwIDE1NyAzOCAxNDggUTUyIDExMiA2NSA4MiBaIiBmaWxsPSJ1cmwoI2RyKSIvPjxwYXRoIGQ9Ik03MCA1OCBMODAgNjkgTDkwIDU4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMS42IiBvcGFjaXR5PSIuNTUiLz48cGF0aCBkPSJNNjUgODIgUTgwIDg4IDk1IDgyIEw5NSA5MCBRODAgOTYgNjUgOTAgWiIgZmlsbD0iIzdhMWYzNSIgb3BhY2l0eT0iLjU1Ii8+PHBhdGggZD0iTTY1IDgyIFE4MCA4OCA5NSA4MiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuMiIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjUiLz48Y2lyY2xlIGN4PSI4MCIgY3k9Ijg4IiByPSIzLjYiIGZpbGw9IiNmNmQyN2EiIHN0cm9rZT0iI2M5OWEyZSIgc3Ryb2tlLXdpZHRoPSIuOCIvPjxwYXRoIGQ9Ik03MiA5NiBRNjQgMTIyIDUyIDE0NiBNODAgOTYgUTgwIDEyNCA4MCAxNTIgTTg4IDk2IFE5NiAxMjIgMTA4IDE0NiIgc3Ryb2tlPSIjOGMxZDNiIiBzdHJva2Utd2lkdGg9IjEuNCIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjI4Ii8+PHBhdGggZD0iTTY4IDgyIFE1OCAxMTIgNDYgMTQ2IFE1MiAxNDggNTYgMTQ4IFE2NCAxMTggNzIgODggWiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjIyIi8+PC9nPjxnPjxwYXRoIGQ9Ik0xNjUgMjQgdjgiIHN0cm9rZT0iIzhkOTVhMSIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNjUgMzQgTDEzOSA1MiBRMTM3IDU1IDE0MSA1NSBIMTg5IFExOTMgNTUgMTkxIDUyIFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZkNzU4MSIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTQyIDU2IEwxNTMgNTMgUTE2NSA2MyAxNzcgNTMgTDE4OCA1NiBMMjA4IDg2IEwxOTUgOTQgTDE4OSA4NCBWMTQ3IFExNjUgMTUzIDE0MSAxNDcgVjg0IEwxMzUgOTQgTDEyMiA4NiBaIiBmaWxsPSJ1cmwoI3NoKSIvPjxwYXRoIGQ9Ik0xODkgODQgTDE5NSA5NCBMMjA4IDg2IEwxODggNTYgWiIgZmlsbD0iIzJmNmFhOCIgb3BhY2l0eT0iLjI1Ii8+PHBhdGggZD0iTTE1MyA1MyBMMTY1IDc0IEwxNzcgNTMgTDE3MSA1MSBRMTY1IDU4IDE1OSA1MSBaIiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTE1MyA1MyBMMTY1IDc0IEwxNzcgNTMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M4ZDZlNiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48cGF0aCBkPSJNMTY1IDc0IFYxNDgiIHN0cm9rZT0iIzJmNmFhOCIgc3Ryb2tlLXdpZHRoPSIxLjIiIG9wYWNpdHk9Ii41Ii8+PGNpcmNsZSBjeD0iMTY1IiBjeT0iODQiIHI9IjIuMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjOWFiNmQ2IiBzdHJva2Utd2lkdGg9Ii43Ii8+PGNpcmNsZSBjeD0iMTY1IiBjeT0iMTAwIiByPSIyLjIiIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzlhYjZkNiIgc3Ryb2tlLXdpZHRoPSIuNyIvPjxjaXJjbGUgY3g9IjE2NSIgY3k9IjExNiIgcj0iMi4yIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM5YWI2ZDYiIHN0cm9rZS13aWR0aD0iLjciLz48Y2lyY2xlIGN4PSIxNjUiIGN5PSIxMzIiIHI9IjIuMiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjOWFiNmQ2IiBzdHJva2Utd2lkdGg9Ii43Ii8+PHJlY3QgeD0iMTQ4IiB5PSI5NiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE1IiByeD0iMS41IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMjIiIHN0cm9rZT0iIzJmNmFhOCIgc3Ryb2tlLXdpZHRoPSIuOSIgc3Ryb2tlLW9wYWNpdHk9Ii41Ii8+PHBhdGggZD0iTTE0MiA5MCBRMTUyIDEyMCAxNDQgMTQ2IEwxNDEgMTQ3IFY4NCBaIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMjUiLz48L2c+PC9nPjwvc3ZnPg==',
+  cosmetics: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMTgwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjcCI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIvPjwvY2xpcFBhdGg+PGZpbHRlciBpZD0iYmwiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjMiLz48L2ZpbHRlcj48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmJlM2YwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZTZjNmYyIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImJrIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGE0MzUwIi8+PHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiMyYTI1MzEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxNDExMWEiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iZ2QiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYxYjgiLz48c3RvcCBvZmZzZXQ9IjAuNDUiIHN0b3AtY29sb3I9IiNmM2Q1N2MiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNjOTk5M2EiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0icmQiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZjVhNzgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNhMTEyM2EiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0icm9zZSIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Y4ZDNjNiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5OTQ4NiIvPjwvbGluZWFyR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJwdyIgY3g9IjAuNCIgY3k9IjAuMzUiIHI9IjAuOCI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjdkY2M5Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZThiOWEwIi8+PC9yYWRpYWxHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9Im1yIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmZmZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjY2ZlM2Y1Ii8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9Im5wIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmY3YWE4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYzQxNzVjIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImhyIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTljOWEwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOWE2ZjQ1Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NwKSI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIgZmlsbD0idXJsKCNiZykiLz48cmVjdCB5PSIxNTAiIHdpZHRoPSIyNDAiIGhlaWdodD0iMzAiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii4zNSIvPjxnPjxwYXRoIGQ9Ik0zMCAxNTAgTDg4IDMwIiBzdHJva2U9InVybCgjaHIpIiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjk1Ii8+PHBhdGggZD0iTTI2IDE2MCBMNDggMTE4IiBzdHJva2U9IiMzYjM0NDEiIHN0cm9rZS13aWR0aD0iOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTgyIDQyIFE5NiAxNiAxMTIgMjYgUTEwNCA1MiA4NCA1NiBaIiBmaWxsPSIjZjRjN2MwIi8+PHBhdGggZD0iTTg0IDQwIFE5NiAyMCAxMDggMjYiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiIG9wYWNpdHk9Ii42Ii8+PC9nPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSIxNTYiIHJ4PSI0NiIgcnk9IjYiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMjgiIGZpbHRlcj0idXJsKCNibCkiLz48ZWxsaXBzZSBjeD0iNjYiIGN5PSIxNTYiIHJ4PSIyMiIgcnk9IjQiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMjgiIGZpbHRlcj0idXJsKCNibCkiLz48ZWxsaXBzZSBjeD0iMjA4IiBjeT0iMTU2IiByeD0iMTgiIHJ5PSI0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIwLjI4IiBmaWx0ZXI9InVybCgjYmwpIi8+PGc+PGVsbGlwc2UgY3g9IjE1MCIgY3k9IjExNiIgcng9IjQ2IiByeT0iMzAiIGZpbGw9InVybCgjcm9zZSkiIHN0cm9rZT0iI2MwN2E2YyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48ZWxsaXBzZSBjeD0iMTUwIiBjeT0iMTEwIiByeD0iNDYiIHJ5PSIzMCIgZmlsbD0idXJsKCNyb3NlKSIvPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSIxMTAiIHJ4PSIzOCIgcnk9IjI0IiBmaWxsPSIjYjk4MDZmIi8+PGVsbGlwc2UgY3g9IjE1MCIgY3k9IjEwOSIgcng9IjM0IiByeT0iMjEiIGZpbGw9InVybCgjcHcpIi8+PGVsbGlwc2UgY3g9IjE1MCIgY3k9IjEwOSIgcng9IjIyIiByeT0iMTMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuNSIvPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSIxMDkiIHJ4PSIxMCIgcnk9IjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuNCIvPjxwYXRoIGQ9Ik0xMTAgMTAwIFExNTAgNTYgMTkwIDEwMCIgZmlsbD0ibm9uZSIvPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSI1OCIgcng9IjM4IiByeT0iMjYiIGZpbGw9InVybCgjcm9zZSkiIHN0cm9rZT0iI2MwN2E2YyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48ZWxsaXBzZSBjeD0iMTUwIiBjeT0iNTgiIHJ4PSIzMiIgcnk9IjIwIiBmaWxsPSJ1cmwoI21yKSIvPjxwYXRoIGQ9Ik0xMjggNTIgUTE0NiA0MCAxNjQgNDQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii45Ii8+PHBhdGggZD0iTTEyMiA2NiBRMTQwIDc0IDE2OCA2NiIgc3Ryb2tlPSIjOWZjMGRlIiBzdHJva2Utd2lkdGg9IjEuNCIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjciLz48cGF0aCBkPSJNMTE4IDc4IFExNTAgODYgMTgyIDc4IEwxODYgOTYgUTE1MCAxMDYgMTE0IDk2IFoiIGZpbGw9IiNkOTk0ODYiIG9wYWNpdHk9Ii4wIi8+PGVsbGlwc2UgY3g9IjE1MCIgY3k9IjgyIiByeD0iMTIiIHJ5PSIzIiBmaWxsPSIjYzA3YTZjIi8+PC9nPjxnPjxyZWN0IHg9IjU0IiB5PSI5OCIgd2lkdGg9IjI2IiBoZWlnaHQ9IjU0IiByeD0iMyIgZmlsbD0idXJsKCNiaykiLz48cmVjdCB4PSI1NCIgeT0iOTgiIHdpZHRoPSIyNiIgaGVpZ2h0PSI5IiBmaWxsPSJ1cmwoI2dkKSIvPjxyZWN0IHg9IjU0IiB5PSIxMTkiIHdpZHRoPSIyNiIgaGVpZ2h0PSI0IiBmaWxsPSJ1cmwoI2dkKSIvPjxyZWN0IHg9IjU4IiB5PSIxMDgiIHdpZHRoPSIzIiBoZWlnaHQ9IjQwIiByeD0iMS41IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMjIiLz48cmVjdCB4PSI1NyIgeT0iNzYiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyNCIgZmlsbD0idXJsKCNnZCkiLz48cGF0aCBkPSJNNTggNzYgTDU4IDU0IFE1OCA0NiA2NiA0NCBMNzcgNjIgTDc3IDc2IFoiIGZpbGw9InVybCgjcmQpIi8+PHBhdGggZD0iTTU4IDU0IFE1OCA0NiA2NiA0NCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSI2MCIgeT0iNzgiIHdpZHRoPSIzIiBoZWlnaHQ9IjE4IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuNCIvPjwvZz48Zz48cmVjdCB4PSIxOTgiIHk9IjExMiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjQwIiByeD0iNyIgZmlsbD0idXJsKCNucCkiLz48cmVjdCB4PSIyMDIiIHk9IjExNiIgd2lkdGg9IjMuNSIgaGVpZ2h0PSIyOCIgcng9IjEuNyIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjQ1Ii8+PHJlY3QgeD0iMjAyIiB5PSIxMDIiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0iI2M0MTc1YyIvPjxyZWN0IHg9IjIwMCIgeT0iODQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIyMiIgcng9IjQiIGZpbGw9InVybCgjYmspIi8+PHJlY3QgeD0iMjAzIiB5PSI4NyIgd2lkdGg9IjIuNCIgaGVpZ2h0PSIxNSIgcng9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjMiLz48L2c+PC9nPjwvc3ZnPg==',
+  supplement: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMTgwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjcCI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIvPjwvY2xpcFBhdGg+PGZpbHRlciBpZD0iYmwiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjMiLz48L2ZpbHRlcj48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTJmNmU0Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYmZlNmM2Ii8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImFtIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTc5YTJhIi8+PHN0b3Agb2Zmc2V0PSIwLjQiIHN0b3AtY29sb3I9IiNjOTc0MWEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3YzNmMDgiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0id2MiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNjZmQ0ZGEiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iZ2MiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM1YmM0NmIiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxZjdhMzUiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0id2IiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlMWU2ZWEiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iY2FwMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmN2E2YSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M4MzgyYyIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJjYXAyIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjN2ZkNjhkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMmY5YTQ3Ii8+PC9saW5lYXJHcmFkaWVudD48cmFkaWFsR3JhZGllbnQgaWQ9InRiIiBjeD0iMC4zNSIgY3k9IjAuMyIgcj0iMC44Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmY2YjAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlM2I5MmUiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY3ApIj48cmVjdCB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCIgcng9IjE4IiBmaWxsPSJ1cmwoI2JnKSIvPjxyZWN0IHk9IjE1MiIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIyOCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjQiLz48cGF0aCBkPSJNMTIgMTUwIFEyMiAxMTIgNDAgOTYgUTM2IDEyMCA0NiAxNTAgWiIgZmlsbD0iIzNmYTM1NiIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTI2IDE1MCBRMzggMTI2IDU0IDExNiBRNDYgMTM0IDUyIDE1MCBaIiBmaWxsPSIjNmNjMjdlIiBvcGFjaXR5PSIuOSIvPjxwYXRoIGQ9Ik0yNCAxNTAgUTI4IDEyMCA0MCA5NiIgc3Ryb2tlPSIjMmM3ZDQwIiBzdHJva2Utd2lkdGg9IjEuMiIgZmlsbD0ibm9uZSIvPjxlbGxpcHNlIGN4PSI5OCIgY3k9IjE1NiIgcng9IjQwIiByeT0iNiIgZmlsbD0iIzAwMCIgb3BhY2l0eT0iMC4yOCIgZmlsdGVyPSJ1cmwoI2JsKSIvPjxlbGxpcHNlIGN4PSIxNjgiIGN5PSIxNTYiIHJ4PSIzMCIgcnk9IjUiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMjgiIGZpbHRlcj0idXJsKCNibCkiLz48Zz48cmVjdCB4PSI2OCIgeT0iNTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIxMDAiIHJ4PSIxMSIgZmlsbD0idXJsKCNhbSkiLz48cmVjdCB4PSI3NiIgeT0iNjAiIHdpZHRoPSI1IiBoZWlnaHQ9IjgyIiByeD0iMi41IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMjgiLz48cmVjdCB4PSI3NCIgeT0iMzQiIHdpZHRoPSI0OCIgaGVpZ2h0PSIyMCIgcng9IjQiIGZpbGw9InVybCgjd2MpIi8+PHJlY3QgeD0iODAiIHk9IjM2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzlhYTFhYSIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSI4NSIgeT0iMzYiIHdpZHRoPSIyIiBoZWlnaHQ9IjE2IiBmaWxsPSIjOWFhMWFhIiBvcGFjaXR5PSIuNiIvPjxyZWN0IHg9IjkwIiB5PSIzNiIgd2lkdGg9IjIiIGhlaWdodD0iMTYiIGZpbGw9IiM5YWExYWEiIG9wYWNpdHk9Ii42Ii8+PHJlY3QgeD0iOTUiIHk9IjM2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzlhYTFhYSIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSIxMDAiIHk9IjM2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzlhYTFhYSIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSIxMDUiIHk9IjM2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzlhYTFhYSIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSIxMTAiIHk9IjM2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzlhYTFhYSIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSIxMTUiIHk9IjM2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzlhYTFhYSIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSI2OCIgeT0iNjYiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MiIgZmlsbD0idXJsKCN3YikiLz48cmVjdCB4PSI2OCIgeT0iNjYiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDNkOGRjIiBzdHJva2Utd2lkdGg9Ii44Ii8+PHJlY3QgeD0iNjgiIHk9IjY2IiB3aWR0aD0iNjAiIGhlaWdodD0iOSIgZmlsbD0idXJsKCNnYykiLz48cGF0aCBkPSJNOTggODIgUTExMiA4NCAxMTYgOTYgUTEwNCA5OCA5OCA5MCBaIiBmaWxsPSIjM2ZhMzU2Ii8+PHBhdGggZD0iTTk4IDgyIFExMDggOTAgMTE2IDk2IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjgiLz48cGF0aCBkPSJNOTggMTAwIFE4OCAxMDAgODQgOTAgUTk0IDg2IDk4IDk0IFoiIGZpbGw9IiM2Y2MyN2UiLz48cmVjdCB4PSI3NiIgeT0iMTA2IiB3aWR0aD0iNDQiIGhlaWdodD0iMy42IiByeD0iMS44IiBmaWxsPSIjNmI3NDgwIi8+PHJlY3QgeD0iODIiIHk9IjExMyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjIuOCIgcng9IjEuNCIgZmlsbD0iI2FlYjZiZiIvPjxyZWN0IHg9Ijg2IiB5PSIxMTkiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyLjgiIHJ4PSIxLjQiIGZpbGw9IiNhZWI2YmYiLz48L2c+PGc+PHJlY3QgeD0iMTQ2IiB5PSI4MiIgd2lkdGg9IjQyIiBoZWlnaHQ9IjY4IiByeD0iOSIgZmlsbD0idXJsKCN3YikiIHN0cm9rZT0iI2NkZDNkOCIgc3Ryb2tlLXdpZHRoPSIxIi8+PHJlY3QgeD0iMTQxIiB5PSI2OCIgd2lkdGg9IjUyIiBoZWlnaHQ9IjE4IiByeD0iNCIgZmlsbD0idXJsKCNnYykiLz48cmVjdCB4PSIxNDYiIHk9IjcwIiB3aWR0aD0iMyIgaGVpZ2h0PSIxNCIgcng9IjEuNSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjQiLz48cmVjdCB4PSIxNDYiIHk9Ijk4IiB3aWR0aD0iNDIiIGhlaWdodD0iMjYiIGZpbGw9IiMyZjlhNDciIG9wYWNpdHk9Ii45Ii8+PGNpcmNsZSBjeD0iMTY3IiBjeT0iMTExIiByPSI3IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTE2NyAxMDUgVjExNyBNMTYxIDExMSBIMTczIiBzdHJva2U9IiMyZjlhNDciIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPjxnPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwMCAxMjgpIHJvdGF0ZSgtMjgpIj48cmVjdCB4PSItMTMiIHk9Ii02IiB3aWR0aD0iMjYiIGhlaWdodD0iMTIiIHJ4PSI2IiBmaWxsPSJ1cmwoI2NhcDEpIi8+PHBhdGggZD0iTTAgLTYgSDcgQTYgNiAwIDAgMSA3IDYgSDAgWiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkyIi8+PHJlY3QgeD0iLTEwIiB5PSItNCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjIuNCIgcng9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjUiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjEyIDE1MCkgcm90YXRlKDIwKSI+PHJlY3QgeD0iLTEzIiB5PSItNiIgd2lkdGg9IjI2IiBoZWlnaHQ9IjEyIiByeD0iNiIgZmlsbD0idXJsKCNjYXAyKSIvPjxwYXRoIGQ9Ik0wIC02IEg3IEE2IDYgMCAwIDEgNyA2IEgwIFoiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii45MiIvPjxyZWN0IHg9Ii0xMCIgeT0iLTQiIHdpZHRoPSIxMiIgaGVpZ2h0PSIyLjQiIHJ4PSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii41Ii8+PC9nPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSIxNTciIHJ4PSI5IiByeT0iNC42IiBmaWxsPSJ1cmwoI3RiKSIvPjxlbGxpcHNlIGN4PSIxNDgiIGN5PSIxNTUuNiIgcng9IjQiIHJ5PSIxLjYiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii42Ii8+PGVsbGlwc2UgY3g9IjIwOCIgY3k9IjEwNiIgcng9IjgiIHJ5PSI4IiBmaWxsPSJ1cmwoI3RiKSIgb3BhY2l0eT0iMCIvPjxlbGxpcHNlIGN4PSI0NiIgY3k9IjE2MCIgcng9IjgiIHJ5PSI0LjQiIGZpbGw9InVybCgjdGIpIi8+PGVsbGlwc2UgY3g9IjQ0IiBjeT0iMTU4LjYiIHJ4PSIzLjYiIHJ5PSIxLjQiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii42Ii8+PC9nPjwvZz48L3N2Zz4=',
+  home: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMTgwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjcCI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIvPjwvY2xpcFBhdGg+PGZpbHRlciBpZD0iYmwiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjMiLz48L2ZpbHRlcj48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmJmMWRjIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZjFkY2I0Ii8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IndkIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjYzk4ZjU1Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGY1YTJjIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IndkMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjAiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2RiYTM2YSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2E4NzAzYiIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJzZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZjVjOSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2YzYzk2OSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJjZSIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjAiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iMC41IiBzdG9wLWNvbG9yPSIjZWVmM2ZhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYzlkNmU4Ii8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImxmIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGNhZTZhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMWY2YjNiIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImxmMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzdmZDA4YSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJmOGY0YSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJmbCIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Q5Yjg4YyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2JmOWE2YiIvPjwvbGluZWFyR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJnbCIgY3g9IjAuNSIgY3k9IjAuNSIgcj0iMC41Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmU5YTAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmU5YTAiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY3ApIj48cmVjdCB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCIgcng9IjE4IiBmaWxsPSJ1cmwoI2JnKSIvPjxyZWN0IHk9IjE0NiIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIzNCIgZmlsbD0idXJsKCNmbCkiIG9wYWNpdHk9Ii43Ii8+PHJlY3QgeT0iMTQ1IiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjMiIGZpbGw9IiM4ZjVhMmMiIG9wYWNpdHk9Ii4yNSIvPjxnPjxyZWN0IHg9IjE1MCIgeT0iMTgiIHdpZHRoPSI1OCIgaGVpZ2h0PSI0NiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjOGY1YTJjIiBzdHJva2Utd2lkdGg9IjQiLz48cmVjdCB4PSIxNTYiIHk9IjI0IiB3aWR0aD0iNDYiIGhlaWdodD0iMzQiIGZpbGw9IiNjZmUzZDYiLz48Y2lyY2xlIGN4PSIxODgiIGN5PSIzNiIgcj0iNyIgZmlsbD0iI2Y2YjY0YiIvPjxwYXRoIGQ9Ik0xNTYgNTggTDE3MiA0MCBMMTg0IDUyIEwxOTIgNDYgTDIwMiA1OCBaIiBmaWxsPSIjNmFhNThhIi8+PHBhdGggZD0iTTE1NiA1OCBMMTY4IDQ4IEwxNzggNTggWiIgZmlsbD0iIzNkN2E2MyIvPjwvZz48Y2lyY2xlIGN4PSI2MiIgY3k9IjUyIiByPSIzOCIgZmlsbD0idXJsKCNnbCkiIG9wYWNpdHk9Ii41Ii8+PGVsbGlwc2UgY3g9IjExMCIgY3k9IjE1MCIgcng9Ijg0IiByeT0iNiIgZmlsbD0iIzAwMCIgb3BhY2l0eT0iMC4zIiBmaWx0ZXI9InVybCgjYmwpIi8+PGc+PHJlY3QgeD0iMzAiIHk9IjEwMCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxMiIgcng9IjMiIGZpbGw9InVybCgjd2QyKSIvPjxyZWN0IHg9IjMwIiB5PSIxMDAiIHdpZHRoPSIxNjAiIGhlaWdodD0iMyIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjMiLz48cmVjdCB4PSI0MCIgeT0iMTEyIiB3aWR0aD0iOCIgaGVpZ2h0PSIzNiIgZmlsbD0idXJsKCN3ZCkiLz48cmVjdCB4PSIxNzIiIHk9IjExMiIgd2lkdGg9IjgiIGhlaWdodD0iMzYiIGZpbGw9InVybCgjd2QpIi8+PHJlY3QgeD0iNDAiIHk9IjEyNCIgd2lkdGg9IjE0MCIgaGVpZ2h0PSI0IiBmaWxsPSJ1cmwoI3dkKSIgb3BhY2l0eT0iLjciLz48L2c+PGc+PHJlY3QgeD0iNjAiIHk9Ijk0IiB3aWR0aD0iMyIgaGVpZ2h0PSI4IiBmaWxsPSIjOGY1YTJjIi8+PGVsbGlwc2UgY3g9IjYyIiBjeT0iOTYiIHJ4PSIxNCIgcnk9IjQiIGZpbGw9IiNkOGRkZTYiLz48cGF0aCBkPSJNNjIgOTYgVjU0IiBzdHJva2U9IiM4ZjVhMmMiIHN0cm9rZS13aWR0aD0iMyIvPjxwYXRoIGQ9Ik00MiA1NCBMODIgNTQgTDc0IDI0IEw1MCAyNCBaIiBmaWxsPSJ1cmwoI3NkKSIvPjxwYXRoIGQ9Ik01MCAyNCBMNzQgMjQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuNyIvPjxwYXRoIGQ9Ik00NiA0MCBMNTAgMjQgTDU2IDI0IEw1MiA1NCBMNDIgNTQgWiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjM1Ii8+PGVsbGlwc2UgY3g9IjYyIiBjeT0iNTQiIHJ4PSIyMCIgcnk9IjMuNCIgZmlsbD0iI2ZmZTA4YSIvPjwvZz48Zz48cGF0aCBkPSJNMTAwIDEwMCBRODIgODggODQgNzAgUTg2IDU2IDEwNCA1MiBRMTIyIDU2IDEyNCA3MCBRMTI2IDg4IDEwOCAxMDAgWiIgZmlsbD0idXJsKCNjZSkiIHN0cm9rZT0iI2E5YmJkMyIgc3Ryb2tlLXdpZHRoPSIxIi8+PHBhdGggZD0iTTkyIDc2IFExMDQgODYgMTE4IDc0IiBzdHJva2U9IiMzZjZmYjAiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PHBhdGggZD0iTTkwIDg0IFExMDQgOTQgMTE2IDg0IiBzdHJva2U9IiMzZjZmYjAiIHN0cm9rZS13aWR0aD0iMS40IiBmaWxsPSJub25lIiBvcGFjaXR5PSIuNSIvPjxlbGxpcHNlIGN4PSIxMDQiIGN5PSI1MiIgcng9IjkiIHJ5PSIzIiBmaWxsPSIjOGFhMGJkIi8+PHJlY3QgeD0iOTIiIHk9IjYyIiB3aWR0aD0iNCIgaGVpZ2h0PSIyNiIgcng9IjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii43Ii8+PHBhdGggZD0iTTEwNCA1MiBROTQgMzAgNzYgMjggUTgyIDQ0IDk4IDUyIFoiIGZpbGw9InVybCgjbGYpIi8+PHBhdGggZD0iTTEwNCA1MiBRMTE2IDI4IDEzNCAzMCBRMTI4IDQ2IDExMiA1MiBaIiBmaWxsPSJ1cmwoI2xmMikiLz48cGF0aCBkPSJNMTA0IDUyIFExMDQgMzAgMTA4IDE0IFExMTggMjggMTEwIDUwIFoiIGZpbGw9InVybCgjbGYpIi8+PHBhdGggZD0iTTEwNCA1MCBROTYgMzYgNzggMzAgTTEwNiA1MCBRMTE4IDM2IDEzMiAzMiBNMTA0IDUwIFExMDYgMzQgMTA4IDE4IiBzdHJva2U9IiMxNzUyMmMiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjYiLz48L2c+PGc+PHJlY3QgeD0iMTM2IiB5PSI4MiIgd2lkdGg9IjQyIiBoZWlnaHQ9IjkiIHJ4PSIxLjUiIGZpbGw9IiNkOTUzNGYiLz48cmVjdCB4PSIxMzgiIHk9IjkxIiB3aWR0aD0iNDAiIGhlaWdodD0iOSIgcng9IjEuNSIgZmlsbD0iIzNmNzhjNCIvPjxyZWN0IHg9IjEzNiIgeT0iODIiIHdpZHRoPSI0MiIgaGVpZ2h0PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMzUiLz48cmVjdCB4PSIxNDQiIHk9IjY0IiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIzIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkM2M0YTQiIHN0cm9rZS13aWR0aD0iMSIvPjxwYXRoIGQ9Ik0xNTMgNzQgcS0zIC02IDAgLTEwIHEzIDQgMCAxMHoiIGZpbGw9IiNmNmE4MmEiLz48L2c+PC9nPjwvc3ZnPg==',
+  jewelry: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMTgwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjcCI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIvPjwvY2xpcFBhdGg+PGZpbHRlciBpZD0iYmwiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjMiLz48L2ZpbHRlcj48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMmMzYTYzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTAxNjJjIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImdkIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMGIwIi8+PHN0b3Agb2Zmc2V0PSIwLjQ1IiBzdG9wLWNvbG9yPSIjZjRjZjZhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjg4NDFmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImdkMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjAiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2M5OWEyZSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZjBiMCIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJ2bCIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzNhMmE1OCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFhMTIzMCIvPjwvbGluZWFyR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJwciIgY3g9IjAuMzUiIGN5PSIwLjMiIHI9IjAuNzUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M5YzVkNiIvPjwvcmFkaWFsR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJyYiIgY3g9IjAuMzUiIGN5PSIwLjMiIHI9IjAuOCI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmY2YTg2Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGEwZjJjIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NwKSI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIgZmlsbD0idXJsKCNiZykiLz48Y2lyY2xlIGN4PSIyNCIgY3k9IjI0IiByPSIxLjYiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuOCIvPjxjaXJjbGUgY3g9IjIxMCIgY3k9IjMwIiByPSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNyIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjE1MCIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjYiLz48Y2lyY2xlIGN4PSIzNiIgY3k9IjEyMCIgcj0iMS4xIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjYiLz48Y2lyY2xlIGN4PSIxMjAiIGN5PSIxNiIgcj0iMSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC43Ii8+PHBhdGggZD0iTTAgMTM4IFExMjAgMTE4IDI0MCAxMzggVjE4MCBIMCBaIiBmaWxsPSJ1cmwoI3ZsKSIvPjxwYXRoIGQ9Ik0wIDEzOCBRMTIwIDExOCAyNDAgMTM4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjE4IiBmaWxsPSJub25lIi8+PGc+PHBhdGggZD0iTTYyIDE4IFExMjAgMTE4IDE3OCAxOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dkMikiIHN0cm9rZS13aWR0aD0iMi40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1kYXNoYXJyYXk9IjEgMy4yIi8+PHBhdGggZD0iTTYyIDE4IFExMjAgMTE4IDE3OCAxOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjRjZjZhIiBzdHJva2Utd2lkdGg9IjEuMiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIwIDc3IEwxMTMgOTAgUTEyMCAxMDAgMTI3IDkwIFoiIGZpbGw9InVybCgjZ2QpIi8+PHBhdGggZD0iTTEyMCA5NCBDMTA4IDEwMCAxMDYgMTE4IDEyMCAxMjggQzEzNCAxMTggMTMyIDEwMCAxMjAgOTQgWiIgZmlsbD0idXJsKCNyYikiIHN0cm9rZT0iI2Y0Y2Y2YSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBhdGggZD0iTTExNCAxMDQgUTExNiAxMDAgMTIwIDEwMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIG9wYWNpdHk9Ii43IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PGVsbGlwc2UgY3g9IjYyIiBjeT0iMTU4IiByeD0iMzYiIHJ5PSI1IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIwLjUiIGZpbHRlcj0idXJsKCNibCkiLz48Zz48ZWxsaXBzZSBjeD0iNjIiIGN5PSIxMzYiIHJ4PSIyNiIgcnk9IjE1IiBmaWxsPSJub25lIiBzdHJva2U9IiM5YTZkMTIiIHN0cm9rZS13aWR0aD0iOSIvPjxlbGxpcHNlIGN4PSI2MiIgY3k9IjEzNCIgcng9IjI2IiByeT0iMTUiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNnZCkiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0zOCAxMzYgUTQ4IDE0OCA2MiAxNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9Ii42Ii8+PHBhdGggZD0iTTUwIDExOCBMNzQgMTE4IEw4MCAxMDggTDYyIDkwIEw0NCAxMDggWiIgZmlsbD0iI2RiZWVmZiIvPjxwYXRoIGQ9Ik00NCAxMDggSDgwIEw2MiAxMjQgWiIgZmlsbD0iI2E5ZDJmNSIgb3BhY2l0eT0iLjAiLz48cGF0aCBkPSJNNDQgMTA4IEw1MCAxMTggTDYyIDEwOCBaIiBmaWxsPSIjYmZlMGZiIi8+PHBhdGggZD0iTTgwIDEwOCBMNzQgMTE4IEw2MiAxMDggWiIgZmlsbD0iIzhmYzJlZSIvPjxwYXRoIGQ9Ik01MCAxMTggTDYyIDEwOCBMNzQgMTE4IFoiIGZpbGw9IiNlYWY2ZmYiLz48cGF0aCBkPSJNNDQgMTA4IEw2MiA5MCBMNjIgMTA4IFoiIGZpbGw9IiNmNGZhZmYiLz48cGF0aCBkPSJNODAgMTA4IEw2MiA5MCBMNjIgMTA4IFoiIGZpbGw9IiNjZmU3ZmIiLz48cGF0aCBkPSJNNDQgMTA4IEw2MiA5MCBMODAgMTA4IEw3NCAxMTggTDUwIDExOCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iLjgiIG9wYWNpdHk9Ii44Ii8+PHBhdGggZD0iTTY2IDk2IEw3MCAxMDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PGVsbGlwc2UgY3g9IjE3NiIgY3k9IjE2MCIgcng9IjI2IiByeT0iNCIgZmlsbD0iIzAwMCIgb3BhY2l0eT0iMC41IiBmaWx0ZXI9InVybCgjYmwpIi8+PGc+PHBhdGggZD0iTTE1OCAxMjAgVjEzMiIgc3Ryb2tlPSJ1cmwoI2dkKSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48Y2lyY2xlIGN4PSIxNTgiIGN5PSIxNDYiIHI9IjEyIiBmaWxsPSJ1cmwoI3ByKSIvPjxlbGxpcHNlIGN4PSIxNTQiIGN5PSIxNDEiIHJ4PSI0IiByeT0iMi42IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOSIvPjxjaXJjbGUgY3g9IjE1OCIgY3k9IjExNiIgcj0iNCIgZmlsbD0idXJsKCNnZCkiLz48cGF0aCBkPSJNMTk0IDEyMCBWMTMyIiBzdHJva2U9InVybCgjZ2QpIiBzdHJva2Utd2lkdGg9IjIuNCIvPjxjaXJjbGUgY3g9IjE5NCIgY3k9IjE0NiIgcj0iMTIiIGZpbGw9InVybCgjcHIpIi8+PGVsbGlwc2UgY3g9IjE5MCIgY3k9IjE0MSIgcng9IjQiIHJ5PSIyLjYiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii45Ii8+PGNpcmNsZSBjeD0iMTk0IiBjeT0iMTE2IiByPSI0IiBmaWxsPSJ1cmwoI2dkKSIvPjwvZz48L2c+PC9zdmc+',
+  other: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMTgwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE4MCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjcCI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIvPjwvY2xpcFBhdGg+PGZpbHRlciBpZD0iYmwiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjMiLz48L2ZpbHRlcj48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTRlZmZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYzhkZWZhIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9InJkIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmY2YjZiIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYzAyNzJkIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9InJkMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjAiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmOGY4ZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q4M2E0MCIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJyYiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjAiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2RmZTVlZSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJrciIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjAiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2U2YzA4YSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2I4ODg0YyIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJrcjIiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmMGQzYTQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNjYWEwNjYiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYmFnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZkNDVlIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZjBhODFjIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImZsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZDJkZmYzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjljZGVhIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI2NwKSI+PHJlY3Qgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxODAiIHJ4PSIxOCIgZmlsbD0idXJsKCNiZykiLz48cmVjdCB5PSIxNTAiIHdpZHRoPSIyNDAiIGhlaWdodD0iMzAiIGZpbGw9InVybCgjZmwpIiBvcGFjaXR5PSIuNyIvPjxlbGxpcHNlIGN4PSI2MCIgY3k9IjE1NCIgcng9IjM2IiByeT0iNSIgZmlsbD0iIzAwMCIgb3BhY2l0eT0iMC4yOCIgZmlsdGVyPSJ1cmwoI2JsKSIvPjxlbGxpcHNlIGN4PSIxNzYiIGN5PSIxNTQiIHJ4PSI0MCIgcnk9IjUiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMjgiIGZpbHRlcj0idXJsKCNibCkiLz48ZWxsaXBzZSBjeD0iMTIwIiBjeT0iMTU2IiByeD0iMzgiIHJ5PSI1IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIwLjI4IiBmaWx0ZXI9InVybCgjYmwpIi8+PGc+PHJlY3QgeD0iMTM2IiB5PSI4MiIgd2lkdGg9Ijc0IiBoZWlnaHQ9IjY4IiBmaWxsPSJ1cmwoI2tyKSIvPjxwYXRoIGQ9Ik0xMzYgODIgTDIxMCA4MiBMMjA0IDc2IEwxNDIgNzYgWiIgZmlsbD0idXJsKCNrcjIpIi8+PHJlY3QgeD0iMTM2IiB5PSI4MiIgd2lkdGg9Ijc0IiBoZWlnaHQ9IjY4IiBmaWxsPSJub25lIiBzdHJva2U9IiM5YTZkMzQiIHN0cm9rZS13aWR0aD0iMSIvPjxyZWN0IHg9IjE2NCIgeT0iODIiIHdpZHRoPSIxOCIgaGVpZ2h0PSIzMCIgZmlsbD0iI2Y2ZWFkMiIgb3BhY2l0eT0iLjkiLz48cmVjdCB4PSIxNjQiIHk9IjgyIiB3aWR0aD0iMTgiIGhlaWdodD0iMyIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjYiLz48cmVjdCB4PSIxNDEiIHk9IjEyNCIgd2lkdGg9IjI2IiBoZWlnaHQ9IjE4IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNjOWQzZTAiIHN0cm9rZS13aWR0aD0iLjgiLz48cmVjdCB4PSIxNDQiIHk9IjEyOCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIuNCIgZmlsbD0iIzdiODc5NCIvPjxyZWN0IHg9IjE0NCIgeT0iMTMzIiB3aWR0aD0iMTQiIGhlaWdodD0iMi40IiBmaWxsPSIjYWFiNGMwIi8+PHJlY3QgeD0iMTQ0IiB5PSIxMzciIHdpZHRoPSIxNyIgaGVpZ2h0PSIyIiBmaWxsPSIjYWFiNGMwIi8+PHBhdGggZD0iTTEzNiA4MiBIMTUwIFYxNTAgSDEzNiBaIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMTIiLz48L2c+PGc+PHBhdGggZD0iTTI2IDc0IEwzNCA2NiBIODggTDk2IDc0IEwxMDAgMTUwIEgyMiBaIiBmaWxsPSJ1cmwoI2JhZykiLz48cGF0aCBkPSJNMjYgNzQgSDk2IiBzdHJva2U9IiNjOTg3MTQiIHN0cm9rZS13aWR0aD0iMS4yIiBvcGFjaXR5PSIuNiIvPjxwYXRoIGQ9Ik00MiA2NiBWNTAgUTQyIDM2IDYxIDM2IFE4MCAzNiA4MCA1MCBWNjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E5NmQxMCIgc3Ryb2tlLXdpZHRoPSIzLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNiA3NCBMMjIgMTUwIEg0MCBMNDAgNzQgWiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjIyIi8+PGNpcmNsZSBjeD0iNjEiIGN5PSIxMDYiIHI9IjE1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOTIiLz48cGF0aCBkPSJNNjEgMTE3IEM1MCAxMDggNTMgOTggNjEgMTAzIEM2OSA5OCA3MiAxMDggNjEgMTE3IFoiIGZpbGw9IiNlNTQ4NGQiLz48L2c+PGc+PHJlY3QgeD0iOTIiIHk9Ijk2IiB3aWR0aD0iNTYiIGhlaWdodD0iNTQiIGZpbGw9InVybCgjcmQpIi8+PHJlY3QgeD0iODgiIHk9Ijg0IiB3aWR0aD0iNjQiIGhlaWdodD0iMTYiIHJ4PSIyIiBmaWxsPSJ1cmwoI3JkMikiLz48cmVjdCB4PSI4OCIgeT0iODQiIHdpZHRoPSI2NCIgaGVpZ2h0PSIzIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMzUiLz48cmVjdCB4PSIxMTIiIHk9Ijg0IiB3aWR0aD0iMTYiIGhlaWdodD0iNjYiIGZpbGw9InVybCgjcmIpIi8+PHJlY3QgeD0iMTEyIiB5PSI4NCIgd2lkdGg9IjMiIGhlaWdodD0iNjYiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii42Ii8+PHBhdGggZD0iTTEyMCA4NCBDMTA0IDY2IDkwIDY2IDkyIDc2IEM5NCA4NiAxMTIgODQgMTIwIDg0IFoiIGZpbGw9InVybCgjcmIpIiBzdHJva2U9IiNjN2NmZGIiIHN0cm9rZS13aWR0aD0iMSIvPjxwYXRoIGQ9Ik0xMjAgODQgQzEzNiA2NiAxNTAgNjYgMTQ4IDc2IEMxNDYgODYgMTI4IDg0IDEyMCA4NCBaIiBmaWxsPSJ1cmwoI3JiKSIgc3Ryb2tlPSIjYzdjZmRiIiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNMTIwIDg0IEMxMDggNzIgMTAwIDcyIDEwMCA3NiBNMTIwIDg0IEMxMzIgNzIgMTQwIDcyIDE0MCA3NiIgc3Ryb2tlPSIjYzdjZmRiIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiLz48ZWxsaXBzZSBjeD0iMTIwIiBjeT0iODQiIHJ4PSI3IiByeT0iNiIgZmlsbD0iI2YyZjVmYSIgc3Ryb2tlPSIjYzdjZmRiIiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNOTIgOTYgSDExMiBMOTIgMTUwIFoiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii4xMCIvPjwvZz48L2c+PC9zdmc+',
+};
+/* ================= step-by-step sign-up wizard =================
+   1 email → 2 name/shop/phone → 3 password → 4 shop type → 5 photo → 6 address (Laos) → 7 welcome → main app */
+const WIZ_PROVS = ['vtc', 'pho', 'lnt', 'bok', 'oud', 'lpb', 'hou', 'say', 'xkh', 'vte', 'blx', 'kha', 'svk', 'slv', 'sek', 'chm', 'att', 'xai'];
+const WIZ_ICON = { fashion: 'shirt', cosmetics: 'lip', supplement: 'bottle', home: 'home', jewelry: 'gem', other: 'box' };
+ICONS.gem = '<path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M9 3l-2 6 5 12 5-12-2-6"/>';
+const WIZ_N = 6;
+/* ---- one URL per step (API mode): /signup/1 … /signup/6, /signup/done ; draft kept locally, never the password ---- */
+const WIZ_RE = /^\/signup(?:\/(\d|done))?\/?$/, WIZ_KEY = 'zl.wiz', WIZ_TTL = 7 * 864e5;
+const wizPath = n => '/signup/' + (n >= 7 ? 'done' : n);
+function wizLoad() { try { const o = JSON.parse(localStorage.getItem(WIZ_KEY) || 'null'); if (o && o.d && Date.now() - (o.t || 0) < WIZ_TTL) { const d = Object.assign({}, o.d); delete d.pass; delete d.pass2; return d; } } catch (e) { /* ignore */ } return {}; }
+function wizClear() { try { localStorage.removeItem(WIZ_KEY); } catch (e) { /* ignore */ } }
+function wizSave() {
+  const sh = S.sheet; if (!sh || sh.k !== 'signup' || (sh.step || 1) > 6 || !sh.d) return;
+  const d = Object.assign({}, sh.d); delete d.pass; delete d.pass2;
+  try { localStorage.setItem(WIZ_KEY, JSON.stringify({ d, t: Date.now() })); } catch (e) { try { delete d.img; localStorage.setItem(WIZ_KEY, JSON.stringify({ d, t: Date.now() })); } catch (e2) { /* ignore */ } }
+}
+/* furthest step the visitor may open with what is filled in */
+function wizMax(d) {
+  if (!/^\S+@\S+\.\S+$/.test(d.email || '')) return 1;
+  if (!d.name || !d.biz || !d.phone) return 2;
+  if ((d.pass || '').length < 6 || d.pass !== d.pass2 || !d.agree) return 3;
+  return d.type ? 6 : 4;
+}
+function wizApplyStep(sh, n) { const mx = wizMax(sh.d || (sh.d = {})); sh.step = Math.min(Math.max(1, n), mx); sh.note = (n > sh.step && sh.step === 3 && sh.d.name && !sh.d.pass) ? t('wz.passAgain') : ''; return sh.step !== n; }
+let wizReady = false;      /* set by wizBoot: the first render must not erase a /signup/N address before the wizard is opened */
+function wizSync() {
+  if (!API_MODE || !wizReady) return;
+  try {
+    const cur = location.pathname.length > 1 ? location.pathname.replace(/\/$/, '') : '/', sh = S.sheet, on = sh && sh.k === 'signup', inWiz = WIZ_RE.test(cur);
+    if (on) { const st = sh.step || 1, want = wizPath(st); if (cur !== want) history[st >= 7 && inWiz ? 'replaceState' : 'pushState'](null, '', want); wizSave(); }
+    else if (inWiz) history.replaceState(null, '', '/');
+  } catch (e) { /* ignore */ }
+}
+function wizBoot() {
+  if (!API_MODE) return; wizReady = true; const m = WIZ_RE.exec(location.pathname); if (!m) return;
+  if (curUser()) { history.replaceState(null, '', '/'); return; }
+  const sv = wizLoad(); S.sheet = { k: 'signup', d: Object.assign({}, sv, { ref: S.refCode || sv.ref || '' }) };
+  wizApplyStep(S.sheet, m[1] === 'done' ? 1 : (+m[1] || 1)); renderSheet();
+}
+window.addEventListener('popstate', () => {
+  if (!API_MODE) return;
+  const m = WIZ_RE.exec(location.pathname), sh = S.sheet, on = sh && sh.k === 'signup';
+  if (!m) { if (on) { S.sheet = null; renderSheet(); } return; }
+  if (curUser() || m[1] === 'done' || (on && (sh.step || 1) >= 7)) { history.replaceState(null, '', '/'); if (on) { S.sheet = null; renderSheet(); } return; }
+  if (on) wizCollect(document.getElementById('f-wz')); else { const sv = wizLoad(); S.sheet = { k: 'signup', d: Object.assign({}, sv, { ref: S.refCode || sv.ref || '' }) }; }
+  if (wizApplyStep(S.sheet, +m[1] || 1)) history.replaceState(null, '', wizPath(S.sheet.step));
+  renderSheet();
+});
+let wizTimer = 0;
+document.addEventListener('input', e => {
+  const f = e.target && e.target.closest ? e.target.closest('#f-wz') : null; if (!f || !S.sheet || S.sheet.k !== 'signup') return;
+  clearTimeout(wizTimer); wizTimer = setTimeout(() => { if (S.sheet && S.sheet.k === 'signup') { wizCollect(document.getElementById('f-wz')); wizSave(); } }, 400);
+});
+const wizAddr = d => [d.vill, d.dist, d.prov ? t('wz.pv.' + d.prov) : ''].filter(Boolean).join(', ');
+const wizProg = n => '<div class="wz-prog" role="progressbar" aria-valuemin="1" aria-valuemax="' + WIZ_N + '" aria-valuenow="' + n + '">' + Array.from({ length: WIZ_N }, (_, i) => '<i class="' + (i < n ? 'on' : '') + '"></i>').join('') + '</div><div class="xs muted">' + t('wz.step', { n, m: WIZ_N }) + '</div>';
+const wizHead = (n, title, sub) => wizProg(n) + '<div><h1 style="font-size:24px;margin:6px 0 4px">' + title + '</h1><p class="muted" style="margin:0">' + sub + '</p></div>';
+
+function signupSheet(sh) {
+  const st = PLAT.settings, tp = planOf(st.trialPlan), trial = st.trialDays > 0 && tp && tp.id !== 'free';
+  if (!st.signupOpen) return { t: t('au.signup'), b: '<div class="empty">' + ico('lock', 26) + '<p style="margin-top:8px">' + t('au.closed') + '</p></div>', f: '<button class="btn pri" data-act="authopen" data-m="login">' + t('au.login') + '</button>' };
+  const d = sh.d = sh.d || (() => { const sv = wizLoad(); return Object.assign({}, sv, { email: sh.email || sv.email || '', ref: sh.ref || S.refCode || sv.ref || '' }); })(), step = sh.step || 1, v = k => esc(d[k] || ''), form = (inner) => '<form id="f-wz" data-form="wz" class="stack" novalidate>' + inner + '<p class="err" role="alert"></p></form>';
+  const nextBtn = (label) => '<button class="btn pri" type="submit" form="f-wz">' + (label || t('wz.next')) + '</button>', back = '<button class="btn" type="button" data-act="wizback">' + t('wz.back') + '</button>';
+  const wrap = (o) => Object.assign({ cls: 'wiz' }, o);
+  switch (step) {
+    case 1: return wrap({ t: 'Zelly', b: wizHead(1, t('wz.s1.title'), t('wz.s1.sub')) + (trial ? '<div class="mini sm">' + ico('bolt', 18) + '<span>' + t('au.trialNote', { d: st.trialDays, p: esc(L(tp.name)) }) + '</span></div>' : '') +
+      form(field(t('au.email'), '<input type="email" name="email" inputmode="email" autocomplete="username" maxlength="150" value="' + v('email') + '" required>')),
+      f: '<button class="btn" data-act="authopen" data-m="login">' + t('au.haveAcct') + '</button>' + nextBtn(t('wz.start')) });
+    case 2: return wrap({ t: 'Zelly', b: wizHead(2, t('wz.s2.title'), t('wz.s2.sub')) + form(
+      field(t('wz.uname'), '<input type="text" name="name" maxlength="80" autocomplete="name" value="' + v('name') + '" required>') + field(t('wz.shopname'), '<input type="text" name="biz" maxlength="100" autocomplete="organization" value="' + v('biz') + '" required>') +
+      field(t('co.phone'), '<input type="tel" name="phone" inputmode="tel" maxlength="30" autocomplete="tel" value="' + v('phone') + '" required>') + (AFF().on ? field(t('af.refField'), '<input type="text" name="ref" maxlength="20" value="' + v('ref') + '" autocapitalize="characters">', t('af.refHint')) : '')), f: back + nextBtn() });
+    case 3: return wrap({ t: 'Zelly', b: wizHead(3, t('wz.s3.title'), t('wz.s3.sub')) + (sh.note ? '<div class="mini sm">' + ico('lock', 18) + '<span>' + esc(sh.note) + '</span></div>' : '') + form(
+      field(t('au.password'), '<input type="password" name="pass" autocomplete="new-password" value="' + v('pass') + '" required>') + field(t('wz.pass2'), '<input type="password" name="pass2" autocomplete="new-password" value="' + v('pass2') + '" required>') +
+      '<label class="check" style="align-items:flex-start"><input type="checkbox" name="agree"' + (d.agree ? ' checked' : '') + ' style="margin-top:3px"><span class="sm">' + esc(L(st.terms)) + '</span></label>'), f: back + nextBtn() });
+    case 4: return wrap({ t: 'Zelly', b: wizHead(4, t('wz.s4.title'), t('wz.s4.sub')) + form('<div class="wz-types">' + TYPE_KEYS.map(k => '<button type="button" class="wz-type" data-act="wiztype" data-v="' + k + '" aria-pressed="' + (d.type === k) + '">' + (WIZ_IMG[k] ? '<img src="' + WIZ_IMG[k] + '" alt="" width="240" height="180" draggable="false">' : ico(WIZ_ICON[k] || 'box', 34)) + '<span>' + esc(typeName(k)) + '</span></button>').join('') + '</div>'), f: back + nextBtn() });
+    case 5: return wrap({ t: 'Zelly', b: wizHead(5, t('wz.s5.title'), t('wz.s5.sub')) + form('<div class="stack" style="align-items:center;gap:12px;padding:8px 0">' + userAvatar({ name: d.name, img: d.img }, 132) + '<div class="row" style="justify-content:center"><label class="btn"><input class="vh" type="file" accept="image/*" data-chg="wizimg">' + ico('plus', 16) + t(d.img ? 'prof.change' : 'prof.upload') + '</label>' + (d.img ? '<button type="button" class="btn danger" data-act="wizimgdel">' + ico('trash', 15) + '</button>' : '') + '</div></div>'), f: back + nextBtn(d.img ? t('wz.next') : t('wz.skip')) });
+    case 6: return wrap({ t: 'Zelly', b: wizHead(6, t('wz.s6.title'), t('wz.s6.sub')) + form(
+      field(t('wz.prov'), '<select name="prov" required><option value="">' + t('wz.provPick') + '</option>' + WIZ_PROVS.map(k => opt(k, t('wz.pv.' + k), d.prov === k)).join('') + '</select>') +
+      '<div class="fgrid">' + field(t('wz.dist'), '<input type="text" name="dist" maxlength="80" value="' + v('dist') + '" required>') + field(t('wz.vill'), '<input type="text" name="vill" maxlength="80" value="' + v('vill') + '">') + '</div>'), f: back + nextBtn(t('wz.finish')) });
+    default: {
+      if (sh.pending) return wrap({ t: 'Zelly', b: '<div class="wz-hero">' + '<div class="wz-ok">' + ico('clock', 44) + '</div><h1>' + t('wz.p.title') + '</h1><p class="muted">' + t('au.pendingDone') + '</p></div>', f: '<button class="btn pri" data-act="close">' + t('close') + '</button>' });
+      return wrap({ t: 'Zelly', b: '<div class="wz-hero"><div class="wz-ok">' + ico('check', 44) + '</div>' + userAvatar({ name: d.name, img: d.img }, 84) + '<h1>' + t('wz.w.title') + '</h1><p class="muted">' + (d.biz ? '<b>' + esc(d.biz) + '</b> · ' : '') + t('wz.w.sub') + '</p></div>' +
+        '<ol class="wz-todo"><li>' + ico('store', 20) + '<span>' + t('wz.w.1') + '</span></li><li>' + ico('box', 20) + '<span>' + t('wz.w.2') + '</span></li><li>' + ico('link', 20) + '<span>' + t('wz.w.3') + '</span></li></ol>', f: '<button class="btn pri" data-act="wizenter">' + t('wz.enter') + '</button>' });
+    }
+  }
+}
+/* read what the visitor typed on the current page into the draft */
+function wizCollect(f) {
+  const sh = S.sheet; if (!sh || !sh.d || !f) return;
+  f.querySelectorAll('input[name],select[name]').forEach(el => { sh.d[el.name] = el.type === 'checkbox' ? el.checked : String(el.value).trim(); if (el.type === 'password') sh.d[el.name] = el.value; });
+}
+function wizGo(n) { S.sheet.step = n; S.sheet.note = ''; renderSheet(); const el = document.querySelector('#f-wz input:not([type=hidden]):not([type=file]):not([type=checkbox])'); if (el && n !== 5) { try { el.focus({ preventScroll: true }); } catch (e) { /* ignore */ } } }
+async function wizBusy(fn) { const b = [...document.querySelectorAll('button[form="f-wz"]')]; b.forEach(x => { x.disabled = true; }); try { return await fn(); } finally { b.forEach(x => { x.disabled = false; }); } }
+const wizEmailFree = async email => (API_MODE && window.ZL_emailFree) ? window.ZL_emailFree(email) : { free: !userByEmail(email) };
+function wizCreateLocal(d) {
+  const rf = d.ref ? userByRef(d.ref) : null; if (d.ref && !rf) return { err: t('af.refBad'), back: 2 };
+  const r = doSignup({ name: d.name, biz: d.biz, email: d.email, phone: d.phone, pass: d.pass, refBy: rf ? rf.id : '', bizType: d.type || '', img: d.img || '', prov: d.prov || '', dist: d.dist || '', vill: d.vill || '', addr: wizAddr(d) });
+  return r.err ? { err: r.err, back: 1 } : r.pending ? { pending: true } : { ok: true };
+}
+const wizCreate = d => (API_MODE && window.ZL_wizCreate) ? window.ZL_wizCreate(d) : Promise.resolve(wizCreateLocal(d));
+async function wizForm(f) {
+  const sh = S.sheet; if (!sh || sh.k !== 'signup') return; wizCollect(f);
+  const d = sh.d, step = sh.step || 1, err = m => setErr(f, m); setErr(f, '');
+  if (step === 1) {
+    if (!/^\S+@\S+\.\S+$/.test(d.email || '')) return err(t('err.email'));
+    const r = await wizBusy(() => wizEmailFree(d.email)); if (!S.sheet || S.sheet !== sh) return;
+    if (r.err) return err(r.err); if (!r.free) return err(t('au.exists'));
+    return wizGo(2);
+  }
+  if (step === 2) {
+    if (!d.name) return err(t('wz.errName')); if (!d.biz) return err(t('wz.errShop')); if ((d.phone || '').replace(/\D/g, '').length < 8) return err(t('err.phone'));
+    return wizGo(3);
+  }
+  if (step === 3) {
+    if ((d.pass || '').length < 6) return err(t('err.pass')); if (d.pass !== d.pass2) return err(t('wz.errMatch')); if (!d.agree) return err(t('err.agree'));
+    return wizGo(4);
+  }
+  if (step === 4) { if (!d.type) return err(t('wz.errType')); return wizGo(5); }
+  if (step === 5) return wizGo(6);
+  if (step === 6) {
+    if (!d.prov) return err(t('wz.errProv')); if (!d.dist) return err(t('wz.errDist'));
+    const res = await wizBusy(() => wizCreate(d));   /* a successful sign-up enters the account, which closes this sheet */
+    if (res.err) { if (S.sheet !== sh) return; if (res.back) { wizGo(res.back); setErr(document.getElementById('f-wz'), res.err); } else err(res.err); return; }
+    wizClear();
+    if (res.pending) { sh.step = 7; sh.pending = true; renderSheet(); return; }
+    S.sheet = { k: 'signup', step: 7, d: { name: d.name, biz: d.biz, img: d.img || '' } }; render(); renderSheet(); window.scrollTo(0, 0);
+  }
+}
+function actWiz(a, d, el) {
+  const sh = S.sheet; if (!sh || sh.k !== 'signup') return false;
+  switch (a) {
+    case 'wizback': wizCollect(document.getElementById('f-wz')); wizGo(Math.max(1, (sh.step || 1) - 1)); return true;
+    case 'wiztype': wizCollect(document.getElementById('f-wz')); sh.d.type = d.v; renderSheet(); return true;
+    case 'wizimgdel': sh.d.img = ''; renderSheet(); return true;
+    case 'wizenter': wizClear(); S.sheet = null; render(); renderSheet(); window.scrollTo(0, 0); return true;
+  }
+  return false;
+}
 /* ================= render + events ================= */
 function render() {
   document.documentElement.lang = LANG;
@@ -5040,6 +5264,7 @@ function act(a, d, el) {
   if (act9(a, d, el)) return;
   if (act10(a, d, el)) return;
   if (act11(a, d, el)) return;
+  if (actWiz(a, d, el)) return;
   if (act12(a, d, el)) return;
   switch (a) {
     case 'lang': setLang(d.l); break;
@@ -5181,6 +5406,7 @@ function form(k, f) {
     case 'aff': { const r = saveAff({ name: g('name'), phone: g('phone'), code: g('code'), pct: g('pct'), store: g('store'), active: fd.get('active') === 'on' }, S.sheet.id); if (r.err) return setErr(f, r.err); closeSheet(); render(); toast(t('af.saved')); break; }
     case 'wd': { const r = requestPayout(curUser().id, g('bank')); if (r.err) return setErr(f, r.err); closeSheet(); render(); toast(t('af.wdSent')); break; }
     case 'affset': { const pct = +g('pct'), mn = +g('min'); if (!(pct >= 1 && pct <= 50)) return setErr(f, t('af.saPctErr')); Object.assign(AFF(), { on: fd.get('on') === 'on', pct, min: Math.max(0, mn || 0) }); render(); toast(t('af.saSaved')); break; }
+    case 'wz': wizForm(f); break;
     case 'lpstart': S.sheet = { k: 'signup', plan: '', email: g('email') }; renderSheet(); break;
     case 'print': {
       const cfg = printFromForm(f), ip = cfg.printer.ip;
@@ -5296,6 +5522,7 @@ function chg(k, el) {
   if (chg11(k, el)) return;
   if (chg12(k, el)) return;
   if (k === 'dshop') { S.dshop = el.value; S.cd = null; render(); return; }
+  if (k === 'wizimg') { const file = el.files && el.files[0]; el.value = ''; if (!file || !S.sheet || !S.sheet.d) return; resizeSquare(file, 256, url => { S.sheet.d.img = url; renderSheet(); }); return; }
   if (k === 'profimg' || k === 'storeimg') { const file = el.files && el.files[0]; el.value = ''; if (!file) return; resizeSquare(file, 256, url => { if (k === 'profimg') curUser().img = url; else S.sheet.img = url; render(); }); return; }
   if (k === 'fontfile') { const file = el.files && el.files[0]; el.value = ''; if (file) addFontFile(file); return; }
   if (k === 'thimg') { const file = el.files && el.files[0], key = el.dataset.k; el.value = ''; if (!file) return; const [mx, ty] = THIMG[key]; resizeImage(file, mx, ty, url => { setPath(S.cd.theme, key, url); setThumb(key); }); return; }
@@ -5585,6 +5812,16 @@ setInterval(tickCd, 1000);
     SY.retryAt = 0; SY.fails = 0; enterUser(PLAT.users.find(x => x.id === u.id)); return true;
   }
 
+  /* ---------- sign-up wizard: server calls ---------- */
+  window.ZL_emailFree = async email => { const r = await api('POST', '/api/auth/check-email', { email }); return r.s === 200 ? { free: !!r.j.free } : { err: emsg(r) }; };
+  window.ZL_wizCreate = async d => {
+    const r = await api('POST', '/api/auth/signup', { name: d.name, biz: d.biz, email: d.email, phone: d.phone, pass: d.pass, ref: d.ref || '', lang: LANG, bizType: d.type, img: d.img || undefined, prov: d.prov, dist: d.dist, vill: d.vill, addr: wizAddr(d) });
+    if (r.s !== 200) return { err: emsg(r), back: r.j && r.j.error === 'af.refBad' ? 2 : r.j && (r.j.error === 'au.exists' || r.j.error === 'err.email') ? 1 : 0 };
+    if (r.j.pending) return { pending: true };
+    if (!(await loadWorkspace())) return { err: t('api.net') };
+    return { ok: true };
+  };
+
   /* ---------- forms (owner side) ---------- */
   const FORMS = {
     login: (f, fd, g) => busy(f, async () => {
@@ -5626,20 +5863,23 @@ setInterval(tickCd, 1000);
       });
     },
     profile: (f, fd, g) => {
-      const u = curUser(), stf = u.role === 'staff', name = g('name'), pw = String(fd.get('pwnew') || ''), email = stf ? u.email : g('email').toLowerCase();
+      const u = curUser(), stf = u.role === 'staff', name = g('name'), email = stf ? u.email : g('email').toLowerCase();
       if (!name) return setErr(f, t('prof.errName'));
       if (!stf && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setErr(f, t('stf.errEmail'));
-      const wantPw = pw || fd.get('pwcur') || fd.get('pwconf');
-      if (wantPw) {
-        if (!String(fd.get('pwcur') || '')) return setErr(f, t('prof.pwBad'));
-        if (pw.length < 6) return setErr(f, t('stf.errPass'));
-        if (pw !== String(fd.get('pwconf') || '')) return setErr(f, t('prof.pwMismatch'));
-      }
       return busy(f, async () => {
-        if (wantPw) { const pr = await api('POST', '/api/me/password', { cur: String(fd.get('pwcur') || ''), pw }); if (pr.s !== 200) return setErr(f, emsg(pr)); }
         const r = await api('POST', '/api/me/profile', { name, phone: g('phone'), biz: g('biz'), addr: g('addr'), email, img: imgOut(u.img) });
         if (r.s !== 200) return setErr(f, emsg(r));
         applyPlat(r.j.plat); closeSheet(); render(); toast(t('prof.saved'));
+      });
+    },
+    pw: (f, fd, g) => {
+      const pw = String(fd.get('pwnew') || ''), cur = String(fd.get('pwcur') || '');
+      if (!cur) return setErr(f, t('prof.pwBad'));
+      if (pw.length < 6) return setErr(f, t('stf.errPass'));
+      if (pw !== String(fd.get('pwconf') || '')) return setErr(f, t('prof.pwMismatch'));
+      return busy(f, async () => {
+        const r = await api('POST', '/api/me/password', { cur, pw }); if (r.s !== 200) return setErr(f, emsg(r));
+        S.sheet = { k: 'profile', draft: S.sheet && S.sheet.draft }; renderSheet(); toast(t('prof.pwDone'));
       });
     },
     wd: (f, fd, g) => {
@@ -5895,6 +6135,7 @@ setInterval(tickCd, 1000);
     const ok = await loadWorkspace();
     if (!ok) { const r = await api('GET', '/api/boot'); if (r.s === 200) applyPlat(r.j.plat); }
     render();
+    if (typeof wizBoot === 'function') wizBoot();
   })();
 })();
 

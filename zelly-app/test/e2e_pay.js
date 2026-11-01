@@ -3,7 +3,7 @@
 const fs = require('fs'), os = require('os'), path = require('path'), http = require('http'), assert = require('assert');
 const tmp = path.join(os.tmpdir(), 'zelly-e2epay-' + process.pid + '.sqlite'); try { fs.unlinkSync(tmp); } catch (e) {}
 Object.assign(process.env, { ZELLY_NO_AUTOSTART: '1', SQLITE_PATH: tmp, PORT: '0', ADMIN_EMAIL: 'root@test.io', ADMIN_PASSWORD: 'rootpass1', PHAJAY_SECRET_KEY: 'sk_test' }); delete process.env.DB_HOST;
-const { chromium } = require('playwright'), { start } = require('../server');
+const { chromium } = require('playwright'), { start } = require('../server'), { wizard } = require('./helpers');
 const SHOTS = process.argv[2] || ''; if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const tx = {}; let n = 1;
 const gw = http.createServer((req, res) => {
@@ -22,9 +22,7 @@ const gw = http.createServer((req, res) => {
   await pg.route(/fonts\.(googleapis|gstatic)\.com|cdnjs/, r => r.abort());
   const shot = n => SHOTS ? pg.screenshot({ path: path.join(SHOTS, n + '.png') }) : null;
   await pg.goto(base + '/'); await pg.waitForSelector('.lp2-top');
-  await pg.click('.lp2-top [data-act=authopen][data-m=signup]'); await pg.waitForSelector('#f-signup');
-  await pg.fill('#f-signup [name=name]', 'Noy'); await pg.fill('#f-signup [name=biz]', 'Noy Shop'); await pg.fill('#f-signup [name=email]', 'noy@shop.la'); await pg.fill('#f-signup [name=phone]', '020 5555 1234');
-  await pg.fill('#f-signup [name=pass]', 'secret12'); await pg.check('#f-signup [name=agree]'); await pg.click('button[form=f-signup]');
+  await wizard(pg, { email: 'noy@shop.la', name: 'Noy', biz: 'Noy Shop' });
   await pg.waitForFunction(() => !!curUser(), null, { timeout: 8000 });
   assert.equal(await pg.evaluate(() => PLAT.online), true, 'client must know online payment is on');
   await pg.evaluate(() => { S.sheet = { k: 'upgrade', planId: 'basic', months: 1 }; renderSheet(); });

@@ -19,6 +19,15 @@ async function call(who, method, url, body) {
   r = await call('a', 'POST', '/api/auth/login', { email: 'root@test.io', pass: 'bad' }); assert.equal(r.s, 401);
   r = await call('sa', 'POST', '/api/auth/login', { email: 'root@test.io', pass: 'rootpass1' }); assert.equal(r.s, 200, JSON.stringify(r.j));
   r = await call('o', 'POST', '/api/auth/signup', { name: 'Noy', email: 'noy@x.com', pass: 'secret1', biz: 'Noy Shop', phone: '020 5555 1234' }); assert.equal(r.s, 200, JSON.stringify(r.j));
+  r = await call('', 'POST', '/api/auth/check-email', { email: 'noy@x.com' }); assert.equal(r.j.free, false);
+  r = await call('', 'POST', '/api/auth/check-email', { email: 'new@x.com' }); assert.equal(r.j.free, true);
+  r = await call('', 'POST', '/api/auth/check-email', { email: 'bad' }); assert.equal(r.s, 400);
+  /* wizard fields: type / province / address / photo are stored; junk is dropped */
+  const wpng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+  r = await call('w', 'POST', '/api/auth/signup', { name: 'Wiz', email: 'wiz@x.com', pass: 'secret1', biz: 'Wiz Shop', phone: '020 1', bizType: 'jewelry', prov: 'chm', dist: 'Pakse', vill: 'Ban A', addr: 'Ban A, Pakse, Champasak', img: wpng, lang: 'en' }); assert.equal(r.s, 200, JSON.stringify(r.j));
+  r = await call('w', 'GET', '/api/workspace'); assert.equal(r.j.user.bizType, 'jewelry'); assert.equal(r.j.user.prov, 'chm'); assert.equal(r.j.user.dist, 'Pakse'); assert(/^\/b\/[a-f0-9]{40}$/.test(r.j.user.img), 'photo stored'); assert.equal(r.j.user.addr, 'Ban A, Pakse, Champasak');
+  r = await call('w2', 'POST', '/api/auth/signup', { name: 'Junk', email: 'junk@x.com', pass: 'secret1', bizType: '<x>', prov: 'zzz', img: 'data:text/html;base64,PGI+' }); assert.equal(r.s, 200);
+  r = await call('w2', 'GET', '/api/workspace'); assert.equal(r.j.user.bizType, ''); assert.equal(r.j.user.prov, ''); assert.equal(r.j.user.img, '');
   r = await call('o', 'POST', '/api/auth/signup', { name: 'Noy', email: 'noy@x.com', pass: 'secret1' }); assert.equal(r.s, 400);
   r = await call('o', 'GET', '/api/workspace'); assert.equal(r.s, 200); const w = r.j; let d = w.d.doc, rev = w.d.rev; assert(w.user.role === 'owner');
   const base0 = JSON.parse(JSON.stringify(d));
@@ -38,6 +47,8 @@ async function call(who, method, url, body) {
   /* old-style tracking link /t/<id> redirects to the owning shop */
   { const rr = await fetch(base + '/t/' + oid, { redirect: 'manual' }); assert.equal(rr.status, 302); assert.equal(rr.headers.get('location'), '/s/noyshop?track=' + oid);
     const r2 = await fetch(base + '/t/SK-999999', { redirect: 'manual' }); assert.equal(r2.headers.get('location'), '/'); const r3 = await fetch(base + '/t/%27%20OR%201', { redirect: 'manual' }); assert.equal(r3.headers.get('location'), '/'); }
+  /* every sign-up step URL serves the app */
+  for (const u of ['/signup', '/signup/1', '/signup/6', '/signup/done']) { const r = await fetch(base + u); assert.equal(r.status, 200); assert(/__ZELLY__/.test(await r.text()), u); }
   /* PWA: manifests, service worker, head links */
   { let m = await fetch(base + '/manifest.webmanifest'); assert.equal(m.status, 200); let j = await m.json(); assert.equal(j.display, 'standalone'); assert(j.icons.some(i => i.purpose === 'maskable'));
     m = await fetch(base + '/manifest/noyshop.webmanifest'); assert.equal(m.status, 200); j = await m.json(); assert.equal(j.start_url, '/s/noyshop'); assert.equal(j.name, 'Noy Shop'); assert.equal(j.id, '/s/noyshop');

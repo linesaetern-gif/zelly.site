@@ -8,6 +8,8 @@ const { route, send } = require('../lib/http');
 const { HttpError } = U;
 const Pay = require('../lib/payments'), N = require('../lib/notify');
 const LANGS = ['lo', 'th', 'en'];
+const PROVS = ['vtc', 'pho', 'lnt', 'bok', 'oud', 'lpb', 'hou', 'say', 'xkh', 'vte', 'blx', 'kha', 'svk', 'slv', 'sek', 'chm', 'att', 'xai'];   /* 18 provinces of Laos */
+const BIZ_TYPES = ['fashion', 'cosmetics', 'supplement', 'home', 'jewelry', 'other'];
 const Bill = () => require('./billing');
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -73,9 +75,16 @@ route('GET', '/api/workspace', async ctx => {
 });
 
 /* ---------- auth ---------- */
+/* step 1 of the sign-up wizard: is this e-mail still free? */
+route('POST', '/api/auth/check-email', async ctx => {
+  if (!U.rateLimit('ce:' + U.ip(ctx.req), 30, 600e3)) throw new HttpError(429, 'au.rate');
+  const email = clip(ctx.body.email, 150).trim().toLowerCase(); if (!EMAIL.test(email)) return send(ctx.res, 400, { error: 'err.email' });
+  send(ctx.res, 200, { ok: true, free: !(await M.userByEmail(email)) });
+});
 route('POST', '/api/auth/signup', async ctx => {
   const b = ctx.body, ip = U.ip(ctx.req);
   if (!U.rateLimit('su:' + ip, 8, 3600e3)) throw new HttpError(429, 'au.rate');
+  const img = b.img ? (await B.put(String(b.img))) || '' : '';
   const out = await U.withLock('plat', async () => {
     const pl = await M.getPlat(), st = pl.doc.settings;
     if (!st.signupOpen) return { error: 'au.closed' };
@@ -86,7 +95,7 @@ route('POST', '/api/auth/signup', async ctx => {
     const rc = cleanRef(b.ref); let refBy = '';
     if (rc) { const rf = await ownerByRef(rc); if (!rf) return { error: 'af.refBad' }; if (st.aff && st.aff.on) refBy = rf.id; }
     const trial = st.trialDays > 0 && M.planOf(pl.doc, st.trialPlan) && st.trialPlan !== 'free';
-    const u = { role: 'owner', email, name, biz: clip(b.biz, 100).trim(), phone: clip(b.phone, 30).trim(), planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? U.addDays(st.trialDays) : '', joined: Date.now(), note: '', last: Date.now(), refBy, ref: await newRef(), lang: LANGS.includes(b.lang) ? b.lang : 'lo' };
+    const u = { role: 'owner', email, name, biz: clip(b.biz, 100).trim(), phone: clip(b.phone, 30).trim(), planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? U.addDays(st.trialDays) : '', joined: Date.now(), note: '', last: Date.now(), refBy, ref: await newRef(), lang: LANGS.includes(b.lang) ? b.lang : 'lo', bizType: BIZ_TYPES.includes(b.bizType) ? b.bizType : '', prov: PROVS.includes(b.prov) ? b.prov : '', dist: clip(b.dist, 80).trim(), vill: clip(b.vill, 80).trim(), addr: clip(b.addr, 300).trim(), img };
     const id = await M.insertUser(u, await U.hashPassword(pass));
     return { id, pending: u.status === 'pending', trial: !!trial, u: Object.assign({}, u, { email }) };
   });

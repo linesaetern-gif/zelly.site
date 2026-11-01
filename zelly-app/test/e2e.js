@@ -3,7 +3,7 @@
 const fs = require('fs'), os = require('os'), path = require('path'), assert = require('assert');
 const tmp = path.join(os.tmpdir(), 'zelly-e2e-' + process.pid + '.sqlite'); try { fs.unlinkSync(tmp); } catch (e) {}
 process.env.ZELLY_NO_AUTOSTART = '1'; process.env.SQLITE_PATH = tmp; process.env.PORT = '0'; process.env.ADMIN_EMAIL = 'root@test.io'; process.env.ADMIN_PASSWORD = 'rootpass1'; delete process.env.DB_HOST;
-const { chromium } = require('playwright'), { start } = require('../server');
+const { chromium } = require('playwright'), { start } = require('../server'), { wizard } = require('./helpers');
 const SHOTS = process.argv[2] || ''; if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 (async () => {
   const srv = await start(), base = 'http://127.0.0.1:' + srv.address().port, br = await chromium.launch(), errs = [];
@@ -28,11 +28,9 @@ const SHOTS = process.argv[2] || ''; if (SHOTS) fs.mkdirSync(SHOTS, { recursive:
   const ow = await mk(1280, 900); await ow.goto(base + '/'); await ow.waitForSelector('.lp2-top');
   assert.equal(await ev(ow, () => PLAT.users.length), 0, 'no demo users leak to guests');
   await shot(ow, '01_landing');
-  await ow.click('.lp2-top [data-act=authopen][data-m=signup]'); await ow.waitForSelector('#f-signup');
-  await ow.fill('#f-signup [name=name]', 'Noy Vongsa'); await ow.fill('#f-signup [name=biz]', 'Noy Shop'); await ow.fill('#f-signup [name=email]', 'noy@shop.la'); await ow.fill('#f-signup [name=phone]', '020 5555 1234');
-  await ow.fill('#f-signup [name=pass]', 'secret12'); await ow.check('#f-signup [name=agree]'); await ow.click('button[form=f-signup]');
+  await wizard(ow, { email: 'noy@shop.la', name: 'Noy Vongsa', biz: 'Noy Shop', type: 'cosmetics', prov: 'lpb', dist: 'Louangphabang', vill: 'Xiengthong', shot: n => shot(ow, n) });
   await ow.waitForFunction(() => !!curUser(), null, { timeout: 8000 });
-  assert.equal(await ev(ow, () => [curUser().email, curUser().role, D.stores.length].join()), 'noy@shop.la,owner,0');
+  assert.equal(await ev(ow, () => [curUser().email, curUser().role, D.stores.length, curUser().bizType, curUser().prov, curUser().dist, curUser().addr].join()), 'noy@shop.la,owner,0,cosmetics,lpb,Louangphabang,Xiengthong, Louangphabang, ຫຼວງພະບາງ');
   await shot(ow, '02_owner_empty');
 
   /* ---- 2. owner builds a shop (sync to server) ---- */
@@ -134,10 +132,8 @@ const SHOTS = process.argv[2] || ''; if (SHOTS) fs.mkdirSync(SHOTS, { recursive:
   /* ---- 11. owner-to-owner referral, commission and payout ---- */
   await ev(sa, () => { AFF().on = true; AFF().min = 1000; AFF().pct = 10; }); await sa.waitForTimeout(2500);
   await ow.reload(); await ow.waitForFunction(() => !!curUser()); const refCode = await ev(ow, () => curUser().ref); assert(/^Z[A-Z0-9]{6}$/.test(refCode), refCode);
-  const fr = await mk(1280, 900); await fr.goto(base + '/?ref=' + refCode); await fr.waitForSelector('.lp2-top'); await fr.click('.lp2-top [data-act=authopen][data-m=signup]'); await fr.waitForSelector('#f-signup');
-  assert.equal(await fr.inputValue('#f-signup [name=ref]'), refCode, 'referral code prefilled from link');
-  await fr.fill('#f-signup [name=name]', 'Friend'); await fr.fill('#f-signup [name=biz]', 'Friend Co'); await fr.fill('#f-signup [name=email]', 'friend@shop.la'); await fr.fill('#f-signup [name=pass]', 'secret12'); await fr.check('#f-signup [name=agree]'); await fr.click('button[form=f-signup]');
-  await fr.waitForFunction(() => !!curUser(), null, { timeout: 8000 });
+  const fr = await mk(1280, 900); await fr.goto(base + '/?ref=' + refCode); await fr.waitForSelector('.lp2-top');
+  await wizard(fr, { email: 'friend@shop.la', name: 'Friend', biz: 'Friend Co', refExpect: refCode });
   await ev(fr, () => act('upgrade', { plan: 'basic' })); await fr.waitForFunction(() => S.sheet && S.sheet.k === 'upgrade'); await ev(fr, () => act('sendreq', {})); await fr.waitForFunction(() => PLAT.requests.length === 1, null, { timeout: 8000 });
   await sa.reload(); await sa.waitForFunction(() => !!curUser() && PLAT.requests.some(r => r.status === 'pending')); 
   const rid = await ev(sa, () => PLAT.requests.find(r => r.status === 'pending' && userById(r.uid).email === 'friend@shop.la').id); await ev(sa, i => { approveRequest(i); render(); }, rid);
