@@ -20,7 +20,13 @@ async function putDoc(id, doc) {
   return rev;
 }
 const emptyData = () => ({ carriers: [], threads: [], codTpl: '', loyalty: null, packPhoto: false, warehouses: [{ id: 'w1', name: lt('ຄັງຫຼັກ', 'คลังหลัก', 'Main warehouse') }], stores: [], products: [], stock: { w1: {} }, log: [], orders: [], seq: { order: 1001, prod: 1, store: 1, wh: 2, coupon: 1, promo: 1, member: 1, aff: 1, carrier: 0 }, affs: [], coupons: [], promos: [], members: [] });
-const getPlat = () => getDoc('plat', () => U.clone(DEFAULT_PLAT));
+const getPlat = async () => {
+  const w = await getDoc('plat', () => U.clone(DEFAULT_PLAT));
+  for (const k of ['commissions', 'payouts']) if (!Array.isArray(w.doc[k])) w.doc[k] = [];
+  w.doc.seq = Object.assign({ comm: 1001, wd: 1001 }, w.doc.seq);
+  if (!w.doc.settings.aff) w.doc.settings.aff = { on: false, pct: 10, min: 50000 };
+  return w;
+};
 const getOwnerDoc = ownerId => getDoc('d:' + ownerId, emptyData);
 
 /* ---------- users ---------- */
@@ -148,6 +154,8 @@ function placeOrder(d, feat, req) {
   const cust = { name: clip(c.name, 80).trim(), phone: clip(c.phone, 30).trim(), address: clip(c.address, 400).trim(), pay: c.pay };
   const o = { id, store: st.id, cust, items: qd.rows.map(r => ({ sku: r.sku, price: r.price, cost: r.cost, qty: r.qty })), subtotal: qd.subtotal, discount: qd.discount, ship: qd.ship, total: qd.total, vat: qd.vat, vatMode: qd.vatMode, vatRate: qd.vatRate, carrier: qd.carrier, coupon: qd.coupon ? qd.coupon.code : '', status: unpaid ? 'unpaid' : 'new', pay: c.pay, paid: false, slip: null, payDue: unpaid ? Date.now() + payOf(st).holdMin * MIN : 0, t: Date.now(), member: member ? member.id : '', tracking: '' };
   if (req.taxInv && vatOf(st).on && req.taxInv.name && req.taxInv.taxId) o.taxInv = { name: clip(req.taxInv.name, 80), taxId: clip(req.taxInv.taxId, 30) };
+  const code = clip(c.aff, 20).trim().toUpperCase();
+  if (code) { const ag = d.affs.find(a => a.code === code); if (!ag || !ag.active || !(ag.store === 'all' || ag.store === st.id)) return { err: 'af.codeBad' }; o.aff = ag.code; o.affPct = ag.pct; o.affAmt = Math.round(Math.max(0, o.subtotal - o.discount) * ag.pct / 100); }
   d.orders.unshift(o);
   return { order: o, points: member ? qd.points : 0 };
 }
@@ -178,6 +186,7 @@ function publicDoc(d, st, feat) {
     warehouses: d.warehouses.filter(w => w.id === st.wh), loyalty: d.loyalty || DEF_LOY(), seq: { order: 0, prod: 0, store: 0, wh: 0, coupon: 0, promo: 0, member: 0, aff: 0 },
     carriers: d.carriers.filter(c => c.active !== false && (c.store === 'all' || c.store === st.id)).map(c => JSON.parse(JSON.stringify(c))),
     coupons: feat.coupons ? d.coupons.filter(c => c.active && (c.store === 'all' || c.store === st.id)).map(c => ({ code: c.code, type: c.type, value: c.value, min: c.min, store: c.store, member: c.member, limit: c.limit, used: c.used, end: c.end, active: true, img: c.img || '', sticker: c.sticker || '' })) : [],
+    affs: d.affs.filter(a => a.active && (a.store === 'all' || a.store === st.id)).map(a => ({ id: a.id, code: a.code, store: a.store, active: true, pct: 0, name: '', phone: '', paid: 0, log: [] })),
     promos: d.promos.filter(p => p.active && (p.store === 'all' || p.store === st.id)).map(p => JSON.parse(JSON.stringify(p)))
   });
   return pub;

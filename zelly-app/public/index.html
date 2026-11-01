@@ -3590,7 +3590,7 @@ PLAT.commissions = []; PLAT.payouts = []; PLAT.seq.comm = 1001; PLAT.seq.wd = 10
 const AFF = () => PLAT.settings.aff;
 const refCode = u => u.ref || (u.ref = 'SKY' + (4100 + (parseInt(String(u.id).slice(1)) || 0) * 17));
 const userByRef = c => { c = String(c || '').trim().toUpperCase(); return c ? PLAT.users.find(u => u.role === 'owner' && refCode(u) === c) : null; };
-const refLink = u => 'https://zelly.example/?ref=' + refCode(u);
+const refLink = u => (API_MODE ? location.origin + '/' : 'https://zelly.example/') + '?ref=' + refCode(u);
 const WD_TONE = { pending: 'warn', paid: 'ok', rejected: 'bad' };
 
 /* ---- platform-level (owner refers owner) ---- */
@@ -4364,12 +4364,12 @@ function codQueueSheet(sh) {
 const lastMsg = th => th.msgs[th.msgs.length - 1];
 function threadGet(sid, name, phone, orderId) {
   let th = D.threads.find(x => x.store === sid && digits(x.phone) === digits(phone));
-  if (!th) { th = { id: 'th' + ((D.seq.thread = (D.seq.thread || 0) + 1)), store: sid, name, phone, orderId: orderId || '', msgs: [], unread: 0, cunread: 0 }; D.threads.push(th); }
+  if (!th) { th = { id: 'th' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), store: sid, name, phone, orderId: orderId || '', msgs: [], unread: 0, cunread: 0 }; D.threads.push(th); }
   else { if (orderId) th.orderId = orderId; if (name) th.name = name; }
   return th;
 }
 function chatBadge(sid) { const th = D.threads.find(x => x.id === S.chatMe[sid]); const n = th ? th.cunread || 0 : 0; return n ? '<span class="badge" style="position:absolute;top:-7px;right:-7px;background:var(--th);color:var(--th-ink)">' + n + '</span>' : ''; }
-function addMsg(th, from, text) { th.msgs.push({ f: from, x: text, t: Date.now() }); if (from === 'c') th.unread = (th.unread || 0) + 1; else th.cunread = (th.cunread || 0) + 1; }
+function addMsg(th, from, text) { th.msgs.push({ id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), f: from, x: text, t: Date.now() }); if (from === 'c') th.unread = (th.unread || 0) + 1; else th.cunread = (th.cunread || 0) + 1; }
 const bubbles = (th, me) => '<div class="chat-msgs" id="chat-msgs">' + (th.msgs.length ? th.msgs.map(m => '<div class="cmsg ' + (m.f === me ? 'me' : 'them') + '"><div class="cb">' + esc(m.x).replace(/\n/g, '<br>') + '</div><div class="xs muted ct">' + fmtT(m.t) + '</div></div>').join('') : '<div class="empty">' + t('chat.empty') + '</div>') + '</div>';
 const chatForm = (side, ph) => '<form class="chat-form" data-form="chatsend" data-side="' + side + '" novalidate><textarea name="text" rows="1" maxlength="500" placeholder="' + esc(ph) + '" aria-label="' + esc(ph) + '" data-enter="send"></textarea><button class="btn pri" type="submit" aria-label="' + esc(t('chat.send')) + '">' + ico('send', 16) + '</button></form>';
 function vChat() {
@@ -5355,10 +5355,8 @@ setInterval(tickCd, 1000);
   if (PUBLIC) document.documentElement.classList.add('pub');
   BASE = location.origin + '/s/';
 
-  /* Phase 1: chat & affiliate are not part of the live release yet */
-  [TABS, SA_TABS].forEach(arr => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i][0] === 'chat' || arr[i][0] === 'affiliate') arr.splice(i, 1); });
   const css = document.createElement('style');
-  css.textContent = 'html.api [data-act="chat"],html.api [data-act="chatopen"]{display:none!important}.boot{display:grid;place-items:center;min-height:70vh;color:var(--muted,#64748b);font:500 15px var(--f-body,system-ui)}' +
+  css.textContent = '.boot{display:grid;place-items:center;min-height:70vh;color:var(--muted,#64748b);font:500 15px var(--f-body,system-ui)}' +
     '.pub-top{display:flex;justify-content:flex-end;padding:8px 12px;max-width:1040px;margin:0 auto}.pub-foot{text-align:center;padding:18px 12px 28px;font-size:12px;color:var(--muted,#64748b)}.pub-nf{max-width:420px;margin:18vh auto;text-align:center;padding:0 16px}' +
     '#syncbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:#b45309;color:#fff;padding:8px 14px;border-radius:999px;font:500 13px var(--f-body,system-ui);z-index:90;box-shadow:0 4px 14px rgba(0,0,0,.25)}';
   document.head.appendChild(css);
@@ -5379,7 +5377,7 @@ setInterval(tickCd, 1000);
     if (k && T[k]) {
       let a = j.a || {};
       if (k === 'e.short') { const f = findVar(a.sku); a = { n: f ? L(f.p.name) + ' (' + L(f.v.label) + ')' : String(a.sku || '') }; }
-      else if (k === 'e.min') a = { m: money(a.m) };
+      else if (k === 'e.min' || k === 'af.minErr') a = { m: money(a.m) };
       return t(k, a);
     }
     return t('api.net');
@@ -5394,7 +5392,7 @@ setInterval(tickCd, 1000);
     const def = { transfer: { on: false, bank: '', accName: '', accNo: '', qr: '', note: '' } };
     PLAT.settings = Object.assign({ aff: { on: false, pct: 10, min: 50000 } }, p.settings); if (!PLAT.settings.pay) PLAT.settings.pay = def;
     PLAT.plans = p.plans; PLAT.users = p.users || []; PLAT.requests = p.requests || []; PLAT.payments = p.payments || []; PLAT.messages = p.messages || [];
-    PLAT.seq = Object.assign({ user: 1, req: 1001, pay: 1001, msg: 1001 }, p.seq); PLAT.commissions = []; PLAT.payouts = [];
+    PLAT.seq = Object.assign({ user: 1, req: 1001, pay: 1001, msg: 1001, comm: 1001, wd: 1001 }, p.seq); PLAT.commissions = p.commissions || []; PLAT.payouts = p.payouts || [];
   }
 
   /* ---------- feature overrides ---------- */
@@ -5413,9 +5411,11 @@ setInterval(tickCd, 1000);
   const bar = on => { let b = document.getElementById('syncbar'); if (on && !b) { b = document.createElement('div'); b.id = 'syncbar'; b.textContent = t('api.unsaved'); document.body.appendChild(b); } else if (!on && b) b.remove(); };
   function setBase(doc, rev) { SY.base = json(doc); SY.baseStr = JSON.stringify(SY.base); SY.rev = rev; SY.pollAt = Date.now() + 7000; }
   function replaceD(nd) { Object.keys(D).forEach(k => delete D[k]); Object.assign(D, Object.assign(emptyData(), nd)); }
+  function patchChat() { const el = document.getElementById('chat-msgs'), th = D.threads.find(x => x.id === S.chatSel); if (!el || !th) return false; el.outerHTML = bubbles(th, 's'); chatScroll(); return true; }
   function softRender() {
     if (S.sheet) { SY.stale = true; return; }
-    const a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.id !== 'q') { SY.stale = true; return; }
+    const a = document.activeElement;
+    if (a && a.tagName === 'TEXTAREA' && a.closest('.chat-form') && S.mode === 'admin' && S.tab === 'chat' && patchChat()) { SY.stale = true; return; } if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.id !== 'q') { SY.stale = true; return; }
     SY.stale = false; render();
   }
   /* take a server document in; keep any local edits made meanwhile */
@@ -5423,6 +5423,7 @@ setInterval(tickCd, 1000);
     const before = JSON.stringify(D), nd = json(sdoc);
     if (snap) ZDiff.apply(nd, ZDiff.diff(snap, D));
     replaceD(nd); setBase(sdoc, rev);
+    const ct = S.tab === 'chat' && S.mode === 'admin' && D.threads.find(x => x.id === S.chatSel); if (ct && ct.unread) ct.unread = 0;
     if (JSON.stringify(D) !== before) softRender();
   }
   function lostSession() { AUTH.uid = ''; SY.base = null; toast(t('api.expired')); resetGuest().then(render); }
@@ -5452,7 +5453,7 @@ setInterval(tickCd, 1000);
     else if (r.s === 200) { SY.rev = r.j.rev; bar(false); }
   }
   /* super admin: platform document */
-  const PKEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq', 'users'];
+  const PKEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq', 'users', 'commissions', 'payouts'];
   const platSub = () => { const o = {}; PKEYS.forEach(k => { o[k] = PLAT[k]; }); return o; };
   const PB = { base: null, str: '', pollAt: 0 };
   const setPB = () => { PB.base = json(platSub()); PB.str = JSON.stringify(PB.base); PB.pollAt = Date.now() + 15000; };
@@ -5522,7 +5523,7 @@ setInterval(tickCd, 1000);
       const pass = String(fd.get('pass') || ''); if (pass.length < 6) return setErr(f, t('err.pass'));
       if (fd.get('agree') !== 'on') return setErr(f, t('err.agree'));
       return busy(f, async () => {
-        const r = await api('POST', '/api/auth/signup', { name: g('name'), biz: g('biz'), email: g('email'), phone: g('phone'), pass });
+        const r = await api('POST', '/api/auth/signup', { name: g('name'), biz: g('biz'), email: g('email'), phone: g('phone'), pass, ref: g('ref') });
         if (r.s !== 200) return setErr(f, emsg(r));
         if (r.j.pending) { S.sheet = null; render(); window.scrollTo(0, 0); return toast(t('au.pendingDone')); }
         if (!(await loadWorkspace())) return setErr(f, t('api.net'));
@@ -5565,6 +5566,16 @@ setInterval(tickCd, 1000);
         applyPlat(r.j.plat); closeSheet(); render(); toast(t('prof.saved'));
       });
     },
+    wd: (f, fd, g) => {
+      const u = curUser(), a = AFF(), bal = affBalance(u.id);
+      if (!(a.on && bal > 0 && bal >= a.min)) return setErr(f, t('af.minErr', { m: money(a.min) }));
+      if (!g('bank')) return setErr(f, t('af.bankErr'));
+      return busy(f, async () => {
+        const r = await api('POST', '/api/affiliate/payout', { bank: g('bank') });
+        if (r.s !== 200) return setErr(f, emsg(r));
+        applyPlat(r.j.plat); closeSheet(); render(); toast(t('af.wdSent'));
+      });
+    },
     staff: (f, fd, g) => {
       const id = g('id'), perms = fd.getAll('perm').filter(x => STAFF_PERMS.includes(x)), email = g('email').toLowerCase(), pass = String(fd.get('pass') || '').trim();
       if (!g('name')) return setErr(f, t('stf.errName'));
@@ -5581,7 +5592,8 @@ setInterval(tickCd, 1000);
 
   /* ---------- storefront for customers (/s/:slug) ---------- */
   const LS = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } } };
-  const kMine = () => 'zl-mine:' + PUBSLUG, kMe = () => 'zl-me:' + PUBSLUG;
+  const kMine = () => 'zl-mine:' + PUBSLUG, kMe = () => 'zl-me:' + PUBSLUG, kChat = () => 'zl-chat:' + PUBSLUG;
+  function setThread(th) { D.threads = th ? [th] : []; if (th) { S.chatMe[S.shop] = th.id; LS.set(kChat(), { tid: th.id, phone: th.phone }); } }
   const rememberOrder = o => { const l = (LS.get(kMine()) || []).filter(x => x.id !== o.id); l.push({ id: o.id, phone: o.cust.phone }); LS.set(kMine(), l.slice(-30)); };
   function pubStock(stock, wh) { if (stock && wh) { D.stock[wh] = Object.assign(D.stock[wh] || {}, stock); } }
   function pubSet(res) {
@@ -5590,13 +5602,14 @@ setInterval(tickCd, 1000);
   }
   async function pubTrack() {
     const orders = LS.get(kMine()) || [], me = LS.get(kMe());
-    const r = await api('POST', '/api/public/track', { shop: PUBSLUG, orders, memberId: me && me.id, memberPhone: me && me.phone });
+    const r = await api('POST', '/api/public/track', { shop: PUBSLUG, orders, memberId: me && me.id, memberPhone: me && me.phone, chat: LS.get(kChat()) });
     if (r.s !== 200) return false;
-    const before = JSON.stringify([D.orders, D.members]);
+    const before = JSON.stringify([D.orders, D.members, D.threads]);
     D.orders = r.j.orders; D.members = r.j.member ? [r.j.member] : []; S.me = r.j.member ? r.j.member.id : '';
     if (!r.j.member && me) LS.set(kMe(), null);
+    D.threads = r.j.thread ? [r.j.thread] : []; if (r.j.thread) S.chatMe[S.shop] = r.j.thread.id; else if (LS.get(kChat())) LS.set(kChat(), null);
     S.mine[S.shop] = D.orders.map(o => o.id);
-    return JSON.stringify([D.orders, D.members]) !== before;
+    return JSON.stringify([D.orders, D.members, D.threads]) !== before;
   }
   async function pubBoot() {
     const [pb, sr] = await Promise.all([api('GET', '/api/boot'), api('GET', '/api/public/shop/' + encodeURIComponent(PUBSLUG))]);
@@ -5615,6 +5628,11 @@ setInterval(tickCd, 1000);
     if (ch && !busySheet) { const a = document.activeElement; if (!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) render(); }
   }
   if (PUBLIC) setInterval(pubPoll, 20000);
+  if (PUBLIC) setInterval(async () => {          // live chat while the chat sheet is open
+    if (document.hidden || !S.sheet || S.sheet.k !== 'chat' || !D.threads[0]) return;
+    const n = D.threads[0].msgs.length; await pubTrack(); const th = D.threads[0]; if (!th || !S.sheet || S.sheet.k !== 'chat') return;
+    if (th.msgs.length !== n) { const el = document.getElementById('chat-msgs'); if (el) { el.outerHTML = bubbles(th, 'c'); chatScroll(); } else renderSheet(); if (th.cunread) { th.cunread = 0; api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'read', tid: th.id, phone: th.phone }); } }
+  }, 4000);
 
   const FORMS_PUB = {
     checkout: (f, fd, g) => {
@@ -5624,13 +5642,31 @@ setInterval(tickCd, 1000);
       if (g('phone').replace(/\D/g, '').length < 9) return setErr(f, t('err.phone'));
       if (carriersFor(sid).length && !carriersFor(sid).some(c => c.id === g('carrier'))) return setErr(f, t('car.pick'));
       if (fd.get('taxreq') === 'on' && (!g('taxname') || !g('taxid'))) return setErr(f, t('vat.errInv'));
+      if (g('aff') && !affApplies(affOf(g('aff')), sid)) return setErr(f, t('af.codeBad'));
       const me = memberById(S.me), lines = (CART[sid] || []).filter(l => l.qty > 0).map(l => ({ sku: l.sku, qty: l.qty }));
       return busy(f, async () => {
-        const r = await api('POST', '/api/public/order', { shop: PUBSLUG, lines, code: S.coupon[sid] || '', memberId: me ? me.id : '', memberPhone: me ? me.phone : '', taxInv: fd.get('taxreq') === 'on' ? { name: g('taxname'), taxId: g('taxid') } : null, cust: { name: g('name'), phone: g('phone'), address: g('address'), pay: g('pay'), carrier: g('carrier') } });
+        const r = await api('POST', '/api/public/order', { shop: PUBSLUG, lines, code: S.coupon[sid] || '', memberId: me ? me.id : '', memberPhone: me ? me.phone : '', taxInv: fd.get('taxreq') === 'on' ? { name: g('taxname'), taxId: g('taxid') } : null, cust: { name: g('name'), phone: g('phone'), address: g('address'), pay: g('pay'), carrier: g('carrier'), aff: g('aff') } });
         if (r.s !== 200) { setErr(f, emsg(r)); if (r.s === 400) pubPoll(); return; }
         D.orders = D.orders.filter(o => o.id !== r.j.order.id).concat(r.j.order); pubStock(r.j.stock, r.j.wh);
         rememberOrder(r.j.order); (S.mine[sid] = S.mine[sid] || []).push(r.j.order.id);
         CART[sid] = []; delete S.coupon[sid]; S.sheet = { k: 'done', id: r.j.order.id, points: me ? r.j.points : 0 }; render();
+      });
+    },
+    chatstart: (f, fd, g) => {
+      if (!g('name') || !g('text')) return setErr(f, t('chat.errReq'));
+      if (g('phone').replace(/\D/g, '').length < 9) return setErr(f, t('err.phone'));
+      return busy(f, async () => {
+        const r = await api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'start', name: g('name'), phone: g('phone'), text: g('text'), order: g('order') });
+        if (r.s !== 200) return setErr(f, emsg(r));
+        setThread(r.j.thread); renderSheet();
+      });
+    },
+    chatsend: (f, fd, g) => {
+      const text = g('text'), th = D.threads[0]; if (!text || !th || f.dataset.side !== 'c') return;
+      return busy(f, async () => {
+        const r = await api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'send', tid: th.id, phone: th.phone, text });
+        if (r.s !== 200) return toast(emsg(r));
+        setThread(r.j.thread); renderSheet();
       });
     },
     member: (f, fd, g) => {
@@ -5668,6 +5704,11 @@ setInterval(tickCd, 1000);
     if (a === 'staffactive') {
       const u = userById(d.id); if (!u || u.ownerId !== curUser().id) return;
       api('POST', '/api/staff', { id: u.id, name: u.name, phone: u.phone || '', email: u.email, perms: u.perms || [], status: u.status === 'active' ? 'suspended' : 'active' }).then(r => { if (r.s !== 200) return toast(emsg(r)); applyPlat(r.j.plat); render(); }); return;
+    }
+    if (PUBLIC && (a === 'chat' || a === 'chatorder')) {
+      const had = D.threads[0] && D.threads[0].cunread > 0; _act(a, d, el);
+      if (had) { const th = D.threads[0]; api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'read', tid: th.id, phone: th.phone }); }
+      return;
     }
     if (PUBLIC && ['mode', 'tab', 'openshop', 'newstore', 'editstore', 'share', 'device', 'opendesign'].includes(a)) return;
     _act(a, d, el);

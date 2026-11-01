@@ -12,11 +12,23 @@ const clip = M.clip;
 const userView = u => { const v = Object.assign({}, u); delete v.pass; return v; };
 function expireRequests(plat) { const now = Date.now(); let n = 0; plat.requests.forEach(r => { if (r.status === 'pending' && !r.slip && r.due && r.due <= now) { r.status = 'expired'; n++; } }); return n; }
 const need = ctx => { if (!ctx.user) throw new HttpError(401, 'auth'); return ctx.user; };
+/* referral codes (owner -> owner affiliate) */
+const REFCH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const cleanRef = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20);
+async function ownerByRef(code) {
+  if (!code) return null; const r = await q("SELECT * FROM users WHERE role = 'owner' AND data LIKE ?", ['%"ref":"' + code + '"%']);
+  return r.map(M.rowToUser).find(u => u.ref === code) || null;
+}
+async function newRef() {
+  for (let i = 0; i < 8; i++) { const b = require('crypto').randomBytes(6); let c = 'Z'; for (const x of b) c += REFCH[x % REFCH.length]; if (!(await ownerByRef(c))) return c; }
+  return 'Z' + U.rid(5).toUpperCase();
+}
+async function ensureRef(u) { if (u.role !== 'owner' || u.ref) return u; const data = M.dataOf(u); data.ref = await newRef(); await M.saveUserData(u.id, data); u.ref = data.ref; return u; }
 const acctId = u => u.role === 'staff' ? u.ownerId : u.id;
 
 /* what a given user may see of the platform document */
 async function platView(user, plat) {
-  const base = { settings: plat.settings, plans: plat.plans, seq: plat.seq };
+  const base = { settings: plat.settings, plans: plat.plans, seq: plat.seq, commissions: [], payouts: [] };
   if (!user) { const s = Object.assign({}, plat.settings); delete s.pay; return Object.assign(base, { settings: s, users: [], requests: [], payments: [], messages: [] }); }
   if (user.role === 'super') {
     const rows = await M.allUsers(), users = [];
@@ -25,13 +37,20 @@ async function platView(user, plat) {
       if (u.role === 'owner') { const d = await M.getDoc('d:' + u.id); u.usage = d ? M.usageOf(d.doc) : { shops: 0, products: 0, whs: 0 }; }
       users.push(u);
     }
-    return Object.assign(base, { users, requests: plat.requests, payments: plat.payments, messages: plat.messages });
+    return Object.assign(base, { users, requests: plat.requests, payments: plat.payments, messages: plat.messages, commissions: plat.commissions, payouts: plat.payouts });
   }
   const ownerRow = await M.userById(acctId(user)), users = [userView(M.rowToUser(ownerRow))];
   if (user.role === 'owner') (await M.staffOf(user.id)).forEach(r => users.push(userView(M.rowToUser(r))));
   else users.push(userView(user));
   const oid = acctId(user);
-  return Object.assign(base, { users, requests: plat.requests.filter(r => r.uid === oid), payments: plat.payments.filter(p => p.uid === oid), messages: [] });
+  let payments = plat.payments.filter(p => p.uid === oid), commissions = [], payouts = [];
+  if (user.role === 'owner') {   /* affiliate: the people I referred (no private data) and what I earned */
+    const refd = (await q("SELECT * FROM users WHERE role = 'owner' AND data LIKE ?", ['%"refBy":"' + user.id + '"%'])).map(M.rowToUser).filter(x => x.refBy === user.id);
+    refd.forEach(x => users.push({ id: x.id, role: 'owner', name: x.name, biz: x.biz, joined: x.joined, planId: x.planId, refBy: x.refBy, status: x.status }));
+    refd.forEach(x => plat.payments.filter(p => p.uid === x.id).forEach(p => payments.push({ id: p.id, uid: p.uid, planId: p.planId, months: p.months, amount: 0, method: '', note: '', t: p.t })));
+    commissions = plat.commissions.filter(c => c.uid === user.id); payouts = plat.payouts.filter(w => w.uid === user.id);
+  }
+  return Object.assign(base, { users, requests: plat.requests.filter(r => r.uid === oid), payments, messages: [], commissions, payouts });
 }
 
 /* ---------- boot / workspace ---------- */
@@ -40,7 +59,7 @@ route('GET', '/api/boot', async ctx => {
   send(ctx.res, 200, { user: ctx.user ? userView(ctx.user) : null, plat: await platView(ctx.user, plat) });
 });
 route('GET', '/api/workspace', async ctx => {
-  const u = need(ctx), { doc: plat } = await M.getPlat();
+  const u = await ensureRef(need(ctx)), { doc: plat } = await M.getPlat();
   if (U.rateLimit('ws:' + u.id, 120, 60e3) === false) throw new HttpError(429, 'slow down');
   const out = { user: userView(u), plat: await platView(u, plat) };
   if (u.role !== 'super') {
@@ -61,8 +80,10 @@ route('POST', '/api/auth/signup', async ctx => {
     if (!name || !EMAIL.test(email)) return { error: 'err.email' };
     if (pass.length < 6) return { error: 'err.pass' };
     if (await M.userByEmail(email)) return { error: 'au.exists' };
+    const rc = cleanRef(b.ref); let refBy = '';
+    if (rc) { const rf = await ownerByRef(rc); if (!rf) return { error: 'af.refBad' }; if (st.aff && st.aff.on) refBy = rf.id; }
     const trial = st.trialDays > 0 && M.planOf(pl.doc, st.trialPlan) && st.trialPlan !== 'free';
-    const u = { role: 'owner', email, name, biz: clip(b.biz, 100).trim(), phone: clip(b.phone, 30).trim(), planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? U.addDays(st.trialDays) : '', joined: Date.now(), note: '', last: Date.now() };
+    const u = { role: 'owner', email, name, biz: clip(b.biz, 100).trim(), phone: clip(b.phone, 30).trim(), planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? U.addDays(st.trialDays) : '', joined: Date.now(), note: '', last: Date.now(), refBy, ref: await newRef() };
     const id = await M.insertUser(u, await U.hashPassword(pass));
     return { id, pending: u.status === 'pending', trial: !!trial };
   });
@@ -187,9 +208,24 @@ route('POST', '/api/admin/user', async ctx => {
   } else {
     if (dup) return send(ctx.res, 400, { error: 'au.exists' });
     if (pass.length < 6) return send(ctx.res, 400, { error: 'err.pass' });
-    await M.insertUser(Object.assign({ role: 'owner', joined: Date.now(), last: 0 }, fields, { email }), await U.hashPassword(pass));
+    await M.insertUser(Object.assign({ role: 'owner', joined: Date.now(), last: 0, ref: await newRef(), refBy: '' }, fields, { email }), await U.hashPassword(pass));
   }
   send(ctx.res, 200, { ok: true, plat: await platView(a, plat) });
+});
+
+/* ---------- affiliate payout request (owner) ---------- */
+route('POST', '/api/affiliate/payout', async ctx => {
+  const u = need(ctx); if (u.role !== 'owner') throw new HttpError(403, 'owner only');
+  const bank = clip(ctx.body.bank, 160).trim(); if (!bank) return send(ctx.res, 400, { error: 'af.bankErr' });
+  const out = await U.withLock('plat', async () => {
+    const pl = await M.getPlat(), plat = pl.doc, a = plat.settings.aff;
+    const earned = plat.commissions.filter(c => c.uid === u.id).reduce((s, c) => s + c.amount, 0), taken = plat.payouts.filter(w => w.uid === u.id && w.status !== 'rejected').reduce((s, w) => s + w.amount, 0), bal = earned - taken;
+    if (!a.on || bal <= 0 || bal < a.min) return { error: 'af.minErr', a: { m: a.min } };
+    plat.payouts.unshift({ id: 'WD-' + (plat.seq.wd++), uid: u.id, amount: bal, bank, status: 'pending', t: Date.now() });
+    await M.putDoc('plat', plat); return { plat };
+  });
+  if (out.error) return send(ctx.res, 400, out);
+  send(ctx.res, 200, { ok: true, plat: await platView(u, out.plat) });
 });
 
 /* ---------- landing page contact form ---------- */
@@ -199,4 +235,4 @@ route('POST', '/api/contact', async ctx => {
   await U.withLock('plat', async () => { const pl = await M.getPlat(); pl.doc.messages.unshift({ id: 'MSG-' + (pl.doc.seq.msg++), name: clip(b.name, 80), contact, text, t: Date.now(), done: false }); if (pl.doc.messages.length > 500) pl.doc.messages.length = 500; await M.putDoc('plat', pl.doc); });
   send(ctx.res, 200, { ok: true });
 });
-module.exports = { platView, expireRequests, userView, acctId, PERMS };
+module.exports = { ensureRef, platView, expireRequests, userView, acctId, PERMS };

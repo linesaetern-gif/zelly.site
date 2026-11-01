@@ -66,8 +66,8 @@ async function syncShop(ctx, u, ops, clientRev) {
   send(ctx.res, out.code, out.body);
 }
 
-const PLAT_KEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq'];
-const USER_FIELDS = new Set(['name', 'biz', 'phone', 'status', 'planId', 'exp', 'note', 'addr', 'img', 'refBy', 'last', 'joined']);
+const PLAT_KEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq', 'commissions', 'payouts'];
+const USER_FIELDS = new Set(['ref', 'refBy', 'name', 'biz', 'phone', 'status', 'planId', 'exp', 'note', 'addr', 'img', 'refBy', 'last', 'joined']);
 async function syncPlat(ctx, u, ops) {
   if (u.role !== 'super') throw new HttpError(403, 'admin only');
   const out = await U.withLock('plat', async () => {
