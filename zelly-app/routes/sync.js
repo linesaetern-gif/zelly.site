@@ -7,6 +7,7 @@ const Diff = require('../lib/diff');
 const { route, send } = require('../lib/http');
 const { platView, acctId, expireRequests } = require('./account');
 const { HttpError } = U;
+const Bill = require('./billing');
 
 /* which top-level keys of the shop document each staff permission may change */
 const PERM_KEYS = {
@@ -66,8 +67,8 @@ async function syncShop(ctx, u, ops, clientRev) {
   send(ctx.res, out.code, out.body);
 }
 
-const PLAT_KEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq'];
-const USER_FIELDS = new Set(['name', 'biz', 'phone', 'status', 'planId', 'exp', 'note', 'addr', 'img', 'refBy', 'last', 'joined']);
+const PLAT_KEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq', 'commissions', 'payouts'];
+const USER_FIELDS = new Set(['ref', 'refBy', 'name', 'biz', 'phone', 'status', 'planId', 'exp', 'note', 'addr', 'img', 'refBy', 'last', 'joined']);
 async function syncPlat(ctx, u, ops) {
   if (u.role !== 'super') throw new HttpError(403, 'admin only');
   const out = await U.withLock('plat', async () => {
@@ -78,7 +79,7 @@ async function syncPlat(ctx, u, ops) {
       if (PLAT_KEYS.includes(op.p[0])) rest.push(op); else replaced = true;
     }
     for (const op of rest) if ('v' in op) { const s = JSON.stringify(op.v); if (s && s.includes('data:')) { op.v = await B.externalize(op.v); replaced = true; } }
-    let dirty = false;
+    let dirty = false; const before = Bill.snap(plat);
     if (rest.length) { Diff.apply(plat, rest); expireRequests(plat); await M.putDoc('plat', plat); dirty = true; }
     for (const id of Object.keys(byUser)) {
       const row = await M.userById(id); if (!row || row.role === 'super') { replaced = true; continue; }
@@ -88,8 +89,9 @@ async function syncPlat(ctx, u, ops) {
       Diff.apply(wrap, byUser[id]); await M.saveUserData(id, wrap.x);
       if (wrap.x.status !== 'active') await S.destroyAllFor(id);
     }
-    return { plat, replaced, dirty };
+    return { plat, replaced, dirty, before };
   });
+  Bill.notifyPlatChanges(out.before, out.plat).catch(e => console.error('[notify]', e.message));
   send(ctx.res, 200, out.replaced ? { ok: true, plat: await platView(u, out.plat) } : { ok: true });
 }
 module.exports = { PERM_KEYS, normalize };

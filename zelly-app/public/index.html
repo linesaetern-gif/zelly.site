@@ -781,6 +781,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-conten
 .car-img.ph{background:var(--surface-2);color:var(--muted)}
 .zlogo{display:block;flex:none;border-radius:26%}
 .lp2-top .zlogo,.lp2-foot .zlogo{box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+
+.qrbox{display:flex;justify-content:center;padding:6px 0}.qrbox .qr{width:224px;height:224px;border-radius:12px;border:1px solid var(--line,#e5e7eb)}.qrbox.off{opacity:.25;filter:grayscale(1)}.paywait svg{animation:paypulse 1.4s ease-in-out infinite}@keyframes paypulse{50%{opacity:.35}}
 </style>
 
 <div id="app"></div>
@@ -2220,6 +2222,33 @@ Object.assign(T, {
   'api.unsaved': ["ຍັງບັນທຶກບໍ່ໄດ້ ກຳລັງລອງໃໝ່…", "ยังบันทึกไม่ได้ กำลังลองใหม่…", "Not saved yet — retrying…"],
   'api.power': ["ສ້າງດ້ວຍ Zelly", "สร้างด้วย Zelly", "Powered by Zelly"],
   'au.rate': ["ລອງຫຼາຍເກີນໄປ ກະລຸນາລໍຖ້າສັກຄູ່ແລ້ວລອງໃໝ່", "ลองบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่", "Too many attempts. Please wait a moment and try again."],
+  'pn.payNow': ["ຊຳລະອອນໄລນ໌ດຽວນີ້", "ชำระออนไลน์ทันที", "Pay online now"],
+  'pn.title': ["ຊຳລະຜ່ານ BCEL OnePay", "ชำระผ่าน BCEL OnePay", "Pay with BCEL OnePay"],
+  'pn.or': ["ຫຼື ໂອນເອງແລ້ວສົ່ງສະລິບ", "หรือโอนเองแล้วส่งสลิป", "Or transfer yourself and send a slip"],
+  'pn.onlineCard': ["ຊຳລະອອນໄລນ໌ (ເປີດໃຊ້ອັດຕະໂນມັດ)", "ชำระออนไลน์ (เปิดใช้งานอัตโนมัติ)", "Pay online (activates automatically)"],
+  'pn.onlineHint': ["ສະແກນ QR ດ້ວຍແອັບ BCEL One ແພັກເກດຈະເປີດໃຊ້ທັນທີຫຼັງຊຳລະ ບໍ່ຕ້ອງລໍຖ້າກວດສະລິບ.", "สแกน QR ด้วยแอป BCEL One แพ็กเกจจะเปิดใช้งานทันทีหลังชำระ ไม่ต้องรอตรวจสลิป", "Scan the QR with the BCEL One app. Your plan activates right after payment, with no slip review."],
+  'pn.openApp': ["ເປີດແອັບທະນາຄານ", "เปิดแอปธนาคาร", "Open banking app"],
+  'pn.scan': ["ສະແກນ QR ດ້ວຍ BCEL One ເພື່ອຊຳລະ", "สแกน QR ด้วย BCEL One เพื่อชำระเงิน", "Scan this QR with BCEL One to pay"],
+  'pn.waiting': ["ກຳລັງລໍຖ້າການຊຳລະ… ໜ້ານີ້ຈະອັບເດດເອງ", "กำลังรอการชำระเงิน… หน้านี้จะอัปเดตเอง", "Waiting for payment… this updates automatically"],
+  'pn.bcelOnly': ["QR ນີ້ໃຊ້ໄດ້ກັບແອັບ BCEL One ເທົ່ານັ້ນ", "QR นี้ใช้ได้กับแอป BCEL One เท่านั้น", "This QR works with the BCEL One app only"],
+  'pn.newQr': ["ສ້າງ QR ໃໝ່", "สร้าง QR ใหม่", "New QR"],
+  'pn.slip': ["ໂອນເອງ + ສົ່ງສະລິບ", "โอนเอง + ส่งสลิป", "Transfer + slip instead"],
+  'pn.creating': ["ກຳລັງສ້າງ QR…", "กำลังสร้าง QR…", "Creating QR…"],
+  'pn.fail': ["ສ້າງ QR ບໍ່ໄດ້ ກະລຸນາລອງໃໝ່ ຫຼື ໃຊ້ວິທີສົ່ງສະລິບ", "สร้าง QR ไม่ได้ กรุณาลองใหม่ หรือใช้วิธีส่งสลิป", "Could not create the QR. Try again or send a slip instead."],
+  'pn.off': ["ຍັງບໍ່ເປີດຮັບຊຳລະອອນໄລນ໌", "ยังไม่เปิดรับชำระออนไลน์", "Online payment is not enabled"],
+  'pn.expired': ["QR ໝົດອາຍຸແລ້ວ ກົດສ້າງ QR ໃໝ່", "QR หมดอายุแล้ว กดสร้าง QR ใหม่", "This QR has expired. Create a new one."],
+  'pn.paidTitle': ["ຊຳລະສຳເລັດ!", "ชำระเงินสำเร็จ!", "Payment successful!"],
+  'pn.paidSub': ["ແພັກເກດ {p} ໃຊ້ງານໄດ້ເຖິງ {d}", "แพ็กเกจ {p} ใช้งานได้ถึง {d}", "{p} plan is active until {d}"],
+  'pn.retry': ["ລອງໃໝ່", "ลองใหม่", "Try again"],
+  'mt.title': ["ສະຖານະລະບົບ ແລະ ອີເມວ", "สถานะระบบและอีเมล", "System status & email"],
+  'mt.pay': ["ຊຳລະອອນໄລນ໌ (PhaJay / BCEL)", "ชำระออนไลน์ (PhaJay / BCEL)", "Online payment (PhaJay / BCEL)"],
+  'mt.mail': ["ສົ່ງອີເມວ (SMTP)", "ส่งอีเมล (SMTP)", "Email (SMTP)"],
+  'mt.on': ["ພ້ອມໃຊ້ງານ", "พร้อมใช้งาน", "Ready"],
+  'mt.off': ["ຍັງບໍ່ໄດ້ຕັ້ງຄ່າ", "ยังไม่ได้ตั้งค่า", "Not configured"],
+  'mt.send': ["ສົ່ງອີເມວທົດສອບຫາຂ້ອຍ", "ส่งอีเมลทดสอบถึงฉัน", "Send me a test email"],
+  'mt.sent': ["ສົ່ງອີເມວທົດສອບແລ້ວ → {e}", "ส่งอีเมลทดสอบแล้ว → {e}", "Test email sent → {e}"],
+  'mt.fail': ["ສົ່ງບໍ່ສຳເລັດ: {e}", "ส่งไม่สำเร็จ: {e}", "Could not send: {e}"],
+  'mt.hint': ["ຕັ້ງຄ່າໃນ Environment variables ຂອງ Hostinger (ເບິ່ງ README).", "ตั้งค่าใน Environment variables ของ Hostinger (ดู README)", "Configure these in Hostinger's environment variables (see README)."],
   'api.loading': ["ກຳລັງໂຫຼດ…", "กำลังโหลด…", "Loading…"]
 });
 /* ================= data (example data, kept in memory) ================= */
@@ -3000,7 +3029,7 @@ function saPlans() {
 }
 function saPolicy() {
   const s = PLAT.settings, chk = (n, v, l) => '<label class="check"><input type="checkbox" name="' + n + '"' + (v ? ' checked' : '') + '>' + l + '</label>';
-  return '<div class="head"><div><h1>' + t('sa.policy') + '</h1><p class="muted sm">' + t('sa.policySub') + '</p></div></div><form class="stack" id="f-policy" data-form="policy" novalidate>' +
+  return '<div class="head"><div><h1>' + t('sa.policy') + '</h1><p class="muted sm">' + t('sa.policySub') + '</p></div></div>' + (API_MODE ? sysStatus() : '') + '<form class="stack" id="f-policy" data-form="policy" novalidate>' +
     '<section class="card stack"><h2 style="margin:0">' + t('po.signup') + '</h2>' + chk('signupOpen', s.signupOpen, t('po.open')) + chk('approval', s.approval, t('po.approval')) +
     '<div class="fgrid">' + field(t('po.trialDays'), '<input type="number" name="trialDays" min="0" value="' + s.trialDays + '">', t('po.trialHint')) + field(t('po.trialPlan'), '<select name="trialPlan">' + PLAT.plans.filter(p => p.id !== 'free').map(p => opt(p.id, L(p.name), p.id === s.trialPlan)).join('') + '</select>') + '</div></section>' +
     '<section class="card stack"><h2 style="margin:0">' + t('po.payTitle') + '</h2><p class="muted xs">' + t('po.payHint') + '</p>' + chk('ptr_on', s.pay.transfer.on, t('pay.transfer')) +
@@ -3043,11 +3072,12 @@ function sheetContent2(sh) {
       return { t: t('up.title'), b: '<div><div class="muted sm" style="margin-bottom:6px">' + t('us.plan') + '</div><div class="chips">' + PLAT.plans.filter(x => x.on && x.id !== 'free').map(x => '<button class="chip" data-act="upplan" data-id="' + x.id + '" aria-pressed="' + (x.id === sh.planId) + '">' + esc(L(x.name)) + ' · ' + money(x.price) + '</button>').join('') + '</div></div>' +
         '<div><div class="muted sm" style="margin-bottom:6px">' + t('up.period') + '</div><div class="chips">' + [1, 3, 12].map(m => '<button class="chip" data-act="upmonths" data-m="' + m + '" aria-pressed="' + (m === sh.months) + '">' + t('bl.months', { n: m }) + (discFor(m) ? ' · −' + discFor(m) + '%' : '') + '</button>').join('') + '</div></div>' +
         '<div class="card stack" style="gap:6px"><div class="sum sm"><span class="muted">' + esc(L(p.name)) + ' × ' + t('bl.months', { n: sh.months }) + '</span><span class="num">' + money(p.price * sh.months) + '</span></div>' + (d ? '<div class="sum sm"><span class="muted">' + t('sum.discount') + ' ' + d + '%</span><span class="num" style="color:var(--ok)">−' + money(p.price * sh.months - total) + '</span></div>' : '') + '<div class="sum total"><span>' + t('sum.total') + '</span><span class="num">' + money(total) + '</span></div></div>' +
-        '<p class="muted xs">' + t('up.note') + '</p>', f: '<button class="btn" data-act="close">' + t('cancel') + '</button><button class="btn pri" data-act="sendreq">' + t('up.send') + '</button>' };
+        '<p class="muted xs">' + t('up.note') + '</p>', f: '<button class="btn" data-act="close">' + t('cancel') + '</button>' + (API_MODE && PLAT.online ? '<button class="btn" data-act="sendreq">' + t('pn.slip') + '</button><button class="btn pri" data-act="sendreqpay">' + ico('bolt', 16) + t('pn.payNow') + '</button>' : '<button class="btn pri" data-act="sendreq">' + t('up.send') + '</button>') };
     }
     case 'reqdone': {
       const r = PLAT.requests.find(x => x.id === sh.id), tr = PLAT.settings.pay.transfer, open = r.status === 'pending';
       return { t: t('rd.title'), b: '<div style="text-align:center"><p class="muted sm">' + t('rd.ref') + '</p><div class="linkbox" style="justify-content:center"><b style="font:600 20px var(--f-display);letter-spacing:.04em">' + r.id + '</b><button class="iconbtn" data-act="copy" data-text="' + r.id + '" aria-label="' + esc(t('rd.ref')) + '">' + ico('copy', 16) + '</button></div><p style="margin-top:8px"><b>' + esc(planName(r.planId)) + '</b> · ' + t('bl.months', { n: r.months }) + '</p><div class="num" style="font:600 28px var(--f-display)">' + money(r.amount) + '</div>' + (open ? '<div class="sm muted">' + reqDue(r) + '</div>' : '<span class="badge ' + RQ_TONE[r.status] + '">' + t('rq.' + r.status) + '</span>') + '</div>' +
+        (open && API_MODE && PLAT.online ? payNowBtn(r.id) + '<div class="muted sm" style="text-align:center">' + t('pn.or') + '</div>' : '') +
         (open ? (tr.on ? '<div class="card stack" style="gap:8px"><b>' + t('pay.transferTo') + '</b>' + (tr.bank ? '<div class="sm"><span class="muted">' + t('pay.bank') + '</span> ' + esc(tr.bank) + '</div>' : '') + (tr.accName ? '<div class="sm"><span class="muted">' + t('pay.accName') + '</span> ' + esc(tr.accName) + '</div>' : '') +
           (tr.accNo ? '<div class="linkbox"><span><span class="muted">' + t('pay.accNo') + '</span> <b>' + esc(tr.accNo) + '</b></span><button class="iconbtn" data-act="copy" data-text="' + esc(tr.accNo) + '" aria-label="' + esc(t('pay.accNo')) + '">' + ico('copy', 16) + '</button></div>' : '') + (tr.qr ? '<div style="text-align:center">' + payImg(tr.qr, 'qrimg') + '</div>' : '') + (tr.note ? '<div class="xs muted">' + esc(tr.note) + '</div>' : '') + '</div>' : '') +
           '<div class="stack" style="gap:8px"><b>' + t('pay.slip') + '</b>' + (r.slipRejected && !r.slip ? '<div class="mini sm" style="border-color:var(--warn)"><span>' + t('pay.slipRejected') + '</span></div>' : '') + (r.slip ? payImg(r.slip.img) + '<div class="mini sm">' + ico('clock', 18) + '<span>' + t('rd.slipSent') + '</span></div>' : '') +
@@ -3590,7 +3620,7 @@ PLAT.commissions = []; PLAT.payouts = []; PLAT.seq.comm = 1001; PLAT.seq.wd = 10
 const AFF = () => PLAT.settings.aff;
 const refCode = u => u.ref || (u.ref = 'SKY' + (4100 + (parseInt(String(u.id).slice(1)) || 0) * 17));
 const userByRef = c => { c = String(c || '').trim().toUpperCase(); return c ? PLAT.users.find(u => u.role === 'owner' && refCode(u) === c) : null; };
-const refLink = u => 'https://zelly.example/?ref=' + refCode(u);
+const refLink = u => (API_MODE ? location.origin + '/' : 'https://zelly.example/') + '?ref=' + refCode(u);
 const WD_TONE = { pending: 'warn', paid: 'ok', rejected: 'bad' };
 
 /* ---- platform-level (owner refers owner) ---- */
@@ -4364,12 +4394,12 @@ function codQueueSheet(sh) {
 const lastMsg = th => th.msgs[th.msgs.length - 1];
 function threadGet(sid, name, phone, orderId) {
   let th = D.threads.find(x => x.store === sid && digits(x.phone) === digits(phone));
-  if (!th) { th = { id: 'th' + ((D.seq.thread = (D.seq.thread || 0) + 1)), store: sid, name, phone, orderId: orderId || '', msgs: [], unread: 0, cunread: 0 }; D.threads.push(th); }
+  if (!th) { th = { id: 'th' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), store: sid, name, phone, orderId: orderId || '', msgs: [], unread: 0, cunread: 0 }; D.threads.push(th); }
   else { if (orderId) th.orderId = orderId; if (name) th.name = name; }
   return th;
 }
 function chatBadge(sid) { const th = D.threads.find(x => x.id === S.chatMe[sid]); const n = th ? th.cunread || 0 : 0; return n ? '<span class="badge" style="position:absolute;top:-7px;right:-7px;background:var(--th);color:var(--th-ink)">' + n + '</span>' : ''; }
-function addMsg(th, from, text) { th.msgs.push({ f: from, x: text, t: Date.now() }); if (from === 'c') th.unread = (th.unread || 0) + 1; else th.cunread = (th.cunread || 0) + 1; }
+function addMsg(th, from, text) { th.msgs.push({ id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), f: from, x: text, t: Date.now() }); if (from === 'c') th.unread = (th.unread || 0) + 1; else th.cunread = (th.cunread || 0) + 1; }
 const bubbles = (th, me) => '<div class="chat-msgs" id="chat-msgs">' + (th.msgs.length ? th.msgs.map(m => '<div class="cmsg ' + (m.f === me ? 'me' : 'them') + '"><div class="cb">' + esc(m.x).replace(/\n/g, '<br>') + '</div><div class="xs muted ct">' + fmtT(m.t) + '</div></div>').join('') : '<div class="empty">' + t('chat.empty') + '</div>') + '</div>';
 const chatForm = (side, ph) => '<form class="chat-form" data-form="chatsend" data-side="' + side + '" novalidate><textarea name="text" rows="1" maxlength="500" placeholder="' + esc(ph) + '" aria-label="' + esc(ph) + '" data-enter="send"></textarea><button class="btn pri" type="submit" aria-label="' + esc(t('chat.send')) + '">' + ico('send', 16) + '</button></form>';
 function vChat() {
@@ -4895,7 +4925,7 @@ function wcShot() {
 }
 function sheetContent8(sh) {
   if (sh.k === 'webcam') return webcamSheet(sh);
-  return { t: '', b: '' };
+  return typeof sheetContent9 === 'function' ? sheetContent9(sh) : { t: '', b: '' };
 }
 
 /* ---------- handlers ---------- */
@@ -4924,6 +4954,33 @@ function chg12(k, el) {
 /* ---------- Zelly logo: Z built from two bars + a lightning bolt ---------- */
 function zlogo(size) {
   return '<svg class="zlogo" viewBox="0 0 100 100" width="' + size + '" height="' + size + '" role="img" aria-label="Zelly"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs><rect width="100" height="100" rx="26" fill="url(#zg)"/><path d="M27 25H73L40 48.5H68L27 76H73" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+}
+/* ================= online subscription payment (API mode): BCEL OnePay QR sheet + system status ================= */
+const payLinkOk = u => /^[a-z][a-z0-9+.-]*:\/\//i.test(String(u || '')) && !/^(javascript|data|vbscript|file):/i.test(String(u));
+function payNowBtn(id) { return '<div class="card stack" style="gap:8px;border-color:var(--pri)"><b>' + t('pn.onlineCard') + '</b><p class="xs muted" style="margin:0">' + t('pn.onlineHint') + '</p><button class="btn pri block" data-act="payonline" data-id="' + id + '">' + ico('bolt', 16) + t('pn.payNow') + '</button></div>'; }
+function sheetContent9(sh) {
+  if (sh.k !== 'paynow') return { t: '', b: '' };
+  const r = PLAT.requests.find(x => x.id === sh.id); if (!r) return { t: t('pn.title'), b: '', f: '<button class="btn pri" data-act="close">' + t('close') + '</button>' };
+  const sum = '<div style="text-align:center"><b>' + esc(planName(r.planId)) + '</b> · ' + t('bl.months', { n: r.months }) + '<div class="num" style="font:600 28px var(--f-display)">' + money(r.amount) + '</div><div class="xs muted">' + r.id + '</div></div>';
+  const close = '<button class="btn pri" data-act="close">' + t('close') + '</button>';
+  if (sh.state === 'paid') {
+    const u = curUser();
+    return { t: t('pn.title'), b: '<div style="text-align:center;padding:10px 0"><div style="color:var(--ok)">' + ico('check', 44) + '</div><h2 style="margin:8px 0 4px">' + t('pn.paidTitle') + '</h2><p class="muted sm">' + t('pn.paidSub', { p: esc(planName(r.planId)), d: esc(u && u.exp || '') }) + '</p></div>', f: close };
+  }
+  if (sh.state === 'loading') return { t: t('pn.title'), b: sum + '<div class="mini sm">' + ico('clock', 18) + '<span>' + t('pn.creating') + '</span></div>', f: '<button class="btn" data-act="reqpay" data-id="' + r.id + '">' + t('pn.slip') + '</button>' };
+  if (sh.state === 'err') return { t: t('pn.title'), b: sum + '<div class="mini sm" style="border-color:var(--warn)"><span>' + esc(sh.msg || t('pn.fail')) + '</span></div>', f: '<button class="btn" data-act="reqpay" data-id="' + r.id + '">' + t('pn.slip') + '</button><button class="btn pri" data-act="paynew">' + t('pn.retry') + '</button>' };
+  const old = sh.state === 'old';
+  return { t: t('pn.title'), b: sum + '<div class="qrbox' + (old ? ' off' : '') + '">' + qrSvg(sh.qr) + '</div>' +
+    (old ? '<div class="mini sm" style="border-color:var(--warn)"><span>' + t('pn.expired') + '</span></div>' :
+      '<p class="sm" style="text-align:center;margin:0">' + t('pn.scan') + '</p>' + (payLinkOk(sh.link) ? '<a class="btn pri block" href="' + esc(sh.link) + '" rel="noopener">' + ico('bolt', 16) + t('pn.openApp') + '</a>' : '') +
+      '<div class="mini sm paywait">' + ico('clock', 18) + '<span>' + t('pn.waiting') + '</span></div><p class="xs muted" style="text-align:center;margin:0">' + t('pn.bcelOnly') + '</p>'),
+    f: '<button class="btn" data-act="reqpay" data-id="' + r.id + '">' + t('pn.slip') + '</button><button class="btn' + (old ? ' pri' : '') + '" data-act="paynew">' + t('pn.newQr') + '</button>' };
+}
+/* super admin: what is switched on on this server */
+function sysStatus() {
+  const row = (l, on) => '<div class="li"><span class="grow">' + l + '</span><span class="badge ' + (on ? 'ok' : 'warn') + '">' + (on ? t('mt.on') : t('mt.off')) + '</span></div>';
+  return '<section class="card stack"><h2 style="margin:0">' + t('mt.title') + '</h2>' + row(t('mt.pay'), PLAT.online) + row(t('mt.mail'), PLAT.emailOn) + '<p class="xs muted" style="margin:0">' + t('mt.hint') + '</p>' +
+    '<div class="row"><button type="button" class="btn sm" data-act="mailtest"' + (PLAT.emailOn ? '' : ' disabled') + '>' + t('mt.send') + '</button></div></section>';
 }
 /* ================= render + events ================= */
 function render() {
@@ -5355,10 +5412,8 @@ setInterval(tickCd, 1000);
   if (PUBLIC) document.documentElement.classList.add('pub');
   BASE = location.origin + '/s/';
 
-  /* Phase 1: chat & affiliate are not part of the live release yet */
-  [TABS, SA_TABS].forEach(arr => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i][0] === 'chat' || arr[i][0] === 'affiliate') arr.splice(i, 1); });
   const css = document.createElement('style');
-  css.textContent = 'html.api [data-act="chat"],html.api [data-act="chatopen"]{display:none!important}.boot{display:grid;place-items:center;min-height:70vh;color:var(--muted,#64748b);font:500 15px var(--f-body,system-ui)}' +
+  css.textContent = '.boot{display:grid;place-items:center;min-height:70vh;color:var(--muted,#64748b);font:500 15px var(--f-body,system-ui)}' +
     '.pub-top{display:flex;justify-content:flex-end;padding:8px 12px;max-width:1040px;margin:0 auto}.pub-foot{text-align:center;padding:18px 12px 28px;font-size:12px;color:var(--muted,#64748b)}.pub-nf{max-width:420px;margin:18vh auto;text-align:center;padding:0 16px}' +
     '#syncbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:#b45309;color:#fff;padding:8px 14px;border-radius:999px;font:500 13px var(--f-body,system-ui);z-index:90;box-shadow:0 4px 14px rgba(0,0,0,.25)}';
   document.head.appendChild(css);
@@ -5379,7 +5434,7 @@ setInterval(tickCd, 1000);
     if (k && T[k]) {
       let a = j.a || {};
       if (k === 'e.short') { const f = findVar(a.sku); a = { n: f ? L(f.p.name) + ' (' + L(f.v.label) + ')' : String(a.sku || '') }; }
-      else if (k === 'e.min') a = { m: money(a.m) };
+      else if (k === 'e.min' || k === 'af.minErr') a = { m: money(a.m) };
       return t(k, a);
     }
     return t('api.net');
@@ -5394,7 +5449,8 @@ setInterval(tickCd, 1000);
     const def = { transfer: { on: false, bank: '', accName: '', accNo: '', qr: '', note: '' } };
     PLAT.settings = Object.assign({ aff: { on: false, pct: 10, min: 50000 } }, p.settings); if (!PLAT.settings.pay) PLAT.settings.pay = def;
     PLAT.plans = p.plans; PLAT.users = p.users || []; PLAT.requests = p.requests || []; PLAT.payments = p.payments || []; PLAT.messages = p.messages || [];
-    PLAT.seq = Object.assign({ user: 1, req: 1001, pay: 1001, msg: 1001 }, p.seq); PLAT.commissions = []; PLAT.payouts = [];
+    PLAT.seq = Object.assign({ user: 1, req: 1001, pay: 1001, msg: 1001, comm: 1001, wd: 1001 }, p.seq); PLAT.commissions = p.commissions || []; PLAT.payouts = p.payouts || [];
+    PLAT.online = !!p.online; PLAT.emailOn = !!p.emailOn;
   }
 
   /* ---------- feature overrides ---------- */
@@ -5413,9 +5469,11 @@ setInterval(tickCd, 1000);
   const bar = on => { let b = document.getElementById('syncbar'); if (on && !b) { b = document.createElement('div'); b.id = 'syncbar'; b.textContent = t('api.unsaved'); document.body.appendChild(b); } else if (!on && b) b.remove(); };
   function setBase(doc, rev) { SY.base = json(doc); SY.baseStr = JSON.stringify(SY.base); SY.rev = rev; SY.pollAt = Date.now() + 7000; }
   function replaceD(nd) { Object.keys(D).forEach(k => delete D[k]); Object.assign(D, Object.assign(emptyData(), nd)); }
+  function patchChat() { const el = document.getElementById('chat-msgs'), th = D.threads.find(x => x.id === S.chatSel); if (!el || !th) return false; el.outerHTML = bubbles(th, 's'); chatScroll(); return true; }
   function softRender() {
     if (S.sheet) { SY.stale = true; return; }
-    const a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.id !== 'q') { SY.stale = true; return; }
+    const a = document.activeElement;
+    if (a && a.tagName === 'TEXTAREA' && a.closest('.chat-form') && S.mode === 'admin' && S.tab === 'chat' && patchChat()) { SY.stale = true; return; } if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.id !== 'q') { SY.stale = true; return; }
     SY.stale = false; render();
   }
   /* take a server document in; keep any local edits made meanwhile */
@@ -5423,6 +5481,7 @@ setInterval(tickCd, 1000);
     const before = JSON.stringify(D), nd = json(sdoc);
     if (snap) ZDiff.apply(nd, ZDiff.diff(snap, D));
     replaceD(nd); setBase(sdoc, rev);
+    const ct = S.tab === 'chat' && S.mode === 'admin' && D.threads.find(x => x.id === S.chatSel); if (ct && ct.unread) ct.unread = 0;
     if (JSON.stringify(D) !== before) softRender();
   }
   function lostSession() { AUTH.uid = ''; SY.base = null; toast(t('api.expired')); resetGuest().then(render); }
@@ -5452,7 +5511,7 @@ setInterval(tickCd, 1000);
     else if (r.s === 200) { SY.rev = r.j.rev; bar(false); }
   }
   /* super admin: platform document */
-  const PKEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq', 'users'];
+  const PKEYS = ['settings', 'plans', 'requests', 'payments', 'messages', 'seq', 'users', 'commissions', 'payouts'];
   const platSub = () => { const o = {}; PKEYS.forEach(k => { o[k] = PLAT[k]; }); return o; };
   const PB = { base: null, str: '', pollAt: 0 };
   const setPB = () => { PB.base = json(platSub()); PB.str = JSON.stringify(PB.base); PB.pollAt = Date.now() + 15000; };
@@ -5511,7 +5570,7 @@ setInterval(tickCd, 1000);
   /* ---------- forms (owner side) ---------- */
   const FORMS = {
     login: (f, fd, g) => busy(f, async () => {
-      const r = await api('POST', '/api/auth/login', { email: g('email'), pass: String(fd.get('pass') || '') });
+      const r = await api('POST', '/api/auth/login', { email: g('email'), pass: String(fd.get('pass') || ''), lang: LANG });
       if (r.s !== 200) return setErr(f, emsg(r));
       if (!(await loadWorkspace())) return setErr(f, t('api.net'));
       render(); window.scrollTo(0, 0); toast(t('au.welcome', { n: curUser().name }));
@@ -5522,7 +5581,7 @@ setInterval(tickCd, 1000);
       const pass = String(fd.get('pass') || ''); if (pass.length < 6) return setErr(f, t('err.pass'));
       if (fd.get('agree') !== 'on') return setErr(f, t('err.agree'));
       return busy(f, async () => {
-        const r = await api('POST', '/api/auth/signup', { name: g('name'), biz: g('biz'), email: g('email'), phone: g('phone'), pass });
+        const r = await api('POST', '/api/auth/signup', { name: g('name'), biz: g('biz'), email: g('email'), phone: g('phone'), pass, ref: g('ref'), lang: LANG });
         if (r.s !== 200) return setErr(f, emsg(r));
         if (r.j.pending) { S.sheet = null; render(); window.scrollTo(0, 0); return toast(t('au.pendingDone')); }
         if (!(await loadWorkspace())) return setErr(f, t('api.net'));
@@ -5565,6 +5624,16 @@ setInterval(tickCd, 1000);
         applyPlat(r.j.plat); closeSheet(); render(); toast(t('prof.saved'));
       });
     },
+    wd: (f, fd, g) => {
+      const u = curUser(), a = AFF(), bal = affBalance(u.id);
+      if (!(a.on && bal > 0 && bal >= a.min)) return setErr(f, t('af.minErr', { m: money(a.min) }));
+      if (!g('bank')) return setErr(f, t('af.bankErr'));
+      return busy(f, async () => {
+        const r = await api('POST', '/api/affiliate/payout', { bank: g('bank') });
+        if (r.s !== 200) return setErr(f, emsg(r));
+        applyPlat(r.j.plat); closeSheet(); render(); toast(t('af.wdSent'));
+      });
+    },
     staff: (f, fd, g) => {
       const id = g('id'), perms = fd.getAll('perm').filter(x => STAFF_PERMS.includes(x)), email = g('email').toLowerCase(), pass = String(fd.get('pass') || '').trim();
       if (!g('name')) return setErr(f, t('stf.errName'));
@@ -5581,7 +5650,8 @@ setInterval(tickCd, 1000);
 
   /* ---------- storefront for customers (/s/:slug) ---------- */
   const LS = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } } };
-  const kMine = () => 'zl-mine:' + PUBSLUG, kMe = () => 'zl-me:' + PUBSLUG;
+  const kMine = () => 'zl-mine:' + PUBSLUG, kMe = () => 'zl-me:' + PUBSLUG, kChat = () => 'zl-chat:' + PUBSLUG;
+  function setThread(th) { D.threads = th ? [th] : []; if (th) { S.chatMe[S.shop] = th.id; LS.set(kChat(), { tid: th.id, phone: th.phone }); } }
   const rememberOrder = o => { const l = (LS.get(kMine()) || []).filter(x => x.id !== o.id); l.push({ id: o.id, phone: o.cust.phone }); LS.set(kMine(), l.slice(-30)); };
   function pubStock(stock, wh) { if (stock && wh) { D.stock[wh] = Object.assign(D.stock[wh] || {}, stock); } }
   function pubSet(res) {
@@ -5590,13 +5660,14 @@ setInterval(tickCd, 1000);
   }
   async function pubTrack() {
     const orders = LS.get(kMine()) || [], me = LS.get(kMe());
-    const r = await api('POST', '/api/public/track', { shop: PUBSLUG, orders, memberId: me && me.id, memberPhone: me && me.phone });
+    const r = await api('POST', '/api/public/track', { shop: PUBSLUG, orders, memberId: me && me.id, memberPhone: me && me.phone, chat: LS.get(kChat()) });
     if (r.s !== 200) return false;
-    const before = JSON.stringify([D.orders, D.members]);
+    const before = JSON.stringify([D.orders, D.members, D.threads]);
     D.orders = r.j.orders; D.members = r.j.member ? [r.j.member] : []; S.me = r.j.member ? r.j.member.id : '';
     if (!r.j.member && me) LS.set(kMe(), null);
+    D.threads = r.j.thread ? [r.j.thread] : []; if (r.j.thread) S.chatMe[S.shop] = r.j.thread.id; else if (LS.get(kChat())) LS.set(kChat(), null);
     S.mine[S.shop] = D.orders.map(o => o.id);
-    return JSON.stringify([D.orders, D.members]) !== before;
+    return JSON.stringify([D.orders, D.members, D.threads]) !== before;
   }
   async function pubBoot() {
     const [pb, sr] = await Promise.all([api('GET', '/api/boot'), api('GET', '/api/public/shop/' + encodeURIComponent(PUBSLUG))]);
@@ -5615,6 +5686,11 @@ setInterval(tickCd, 1000);
     if (ch && !busySheet) { const a = document.activeElement; if (!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) render(); }
   }
   if (PUBLIC) setInterval(pubPoll, 20000);
+  if (PUBLIC) setInterval(async () => {          // live chat while the chat sheet is open
+    if (document.hidden || !S.sheet || S.sheet.k !== 'chat' || !D.threads[0]) return;
+    const n = D.threads[0].msgs.length; await pubTrack(); const th = D.threads[0]; if (!th || !S.sheet || S.sheet.k !== 'chat') return;
+    if (th.msgs.length !== n) { const el = document.getElementById('chat-msgs'); if (el) { el.outerHTML = bubbles(th, 'c'); chatScroll(); } else renderSheet(); if (th.cunread) { th.cunread = 0; api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'read', tid: th.id, phone: th.phone }); } }
+  }, 4000);
 
   const FORMS_PUB = {
     checkout: (f, fd, g) => {
@@ -5624,13 +5700,31 @@ setInterval(tickCd, 1000);
       if (g('phone').replace(/\D/g, '').length < 9) return setErr(f, t('err.phone'));
       if (carriersFor(sid).length && !carriersFor(sid).some(c => c.id === g('carrier'))) return setErr(f, t('car.pick'));
       if (fd.get('taxreq') === 'on' && (!g('taxname') || !g('taxid'))) return setErr(f, t('vat.errInv'));
+      if (g('aff') && !affApplies(affOf(g('aff')), sid)) return setErr(f, t('af.codeBad'));
       const me = memberById(S.me), lines = (CART[sid] || []).filter(l => l.qty > 0).map(l => ({ sku: l.sku, qty: l.qty }));
       return busy(f, async () => {
-        const r = await api('POST', '/api/public/order', { shop: PUBSLUG, lines, code: S.coupon[sid] || '', memberId: me ? me.id : '', memberPhone: me ? me.phone : '', taxInv: fd.get('taxreq') === 'on' ? { name: g('taxname'), taxId: g('taxid') } : null, cust: { name: g('name'), phone: g('phone'), address: g('address'), pay: g('pay'), carrier: g('carrier') } });
+        const r = await api('POST', '/api/public/order', { shop: PUBSLUG, lines, code: S.coupon[sid] || '', memberId: me ? me.id : '', memberPhone: me ? me.phone : '', taxInv: fd.get('taxreq') === 'on' ? { name: g('taxname'), taxId: g('taxid') } : null, cust: { name: g('name'), phone: g('phone'), address: g('address'), pay: g('pay'), carrier: g('carrier'), aff: g('aff') } });
         if (r.s !== 200) { setErr(f, emsg(r)); if (r.s === 400) pubPoll(); return; }
         D.orders = D.orders.filter(o => o.id !== r.j.order.id).concat(r.j.order); pubStock(r.j.stock, r.j.wh);
         rememberOrder(r.j.order); (S.mine[sid] = S.mine[sid] || []).push(r.j.order.id);
         CART[sid] = []; delete S.coupon[sid]; S.sheet = { k: 'done', id: r.j.order.id, points: me ? r.j.points : 0 }; render();
+      });
+    },
+    chatstart: (f, fd, g) => {
+      if (!g('name') || !g('text')) return setErr(f, t('chat.errReq'));
+      if (g('phone').replace(/\D/g, '').length < 9) return setErr(f, t('err.phone'));
+      return busy(f, async () => {
+        const r = await api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'start', name: g('name'), phone: g('phone'), text: g('text'), order: g('order') });
+        if (r.s !== 200) return setErr(f, emsg(r));
+        setThread(r.j.thread); renderSheet();
+      });
+    },
+    chatsend: (f, fd, g) => {
+      const text = g('text'), th = D.threads[0]; if (!text || !th || f.dataset.side !== 'c') return;
+      return busy(f, async () => {
+        const r = await api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'send', tid: th.id, phone: th.phone, text });
+        if (r.s !== 200) return toast(emsg(r));
+        setThread(r.j.thread); renderSheet();
       });
     },
     member: (f, fd, g) => {
@@ -5644,6 +5738,31 @@ setInterval(tickCd, 1000);
       });
     }
   };
+
+  /* ---------- online subscription payment ---------- */
+  let PAYT = 0;
+  const payOpen = id => S.sheet && S.sheet.k === 'paynow' && S.sheet.id === id;
+  async function payStart(id, force) {
+    clearTimeout(PAYT); S.sheet = { k: 'paynow', id, state: 'loading' }; renderSheet();
+    const r = await api('POST', '/api/billing/pay', { id, force: !!force });
+    if (!payOpen(id)) return;
+    if (r.s !== 200) { const e = r.j && r.j.error; S.sheet.state = 'err'; S.sheet.msg = e === 'pay.off' ? t('pn.off') : e === 'pay.fail' ? t('pn.fail') : e === 'pay.done' ? t('pn.paidTitle') : emsg(r); renderSheet(); return; }
+    Object.assign(S.sheet, { state: 'wait', qr: r.j.pay.qr, link: r.j.pay.link, at: r.j.pay.at }); renderSheet(); payPoll(id);
+  }
+  function payPoll(id) {
+    clearTimeout(PAYT);
+    PAYT = setTimeout(async () => {
+      if (!payOpen(id) || S.sheet.state !== 'wait') return;
+      if (Date.now() - S.sheet.at > 15 * 60e3) { S.sheet.state = 'old'; renderSheet(); return; }
+      const r = await api('GET', '/api/billing/status?id=' + encodeURIComponent(id));
+      if (!payOpen(id)) return;
+      if (r.s === 200 && r.j.paid) { if (r.j.plat) applyPlat(r.j.plat); S.sheet.state = 'paid'; render(); renderSheet(); return; }
+      if (r.s === 401) return;
+      payPoll(id);
+    }, 3000);
+  }
+
+  { const _setLang = setLang; setLang = function (l) { _setLang(l); if (!PUBLIC && AUTH.uid) api('POST', '/api/me/lang', { lang: l }); }; }
 
   /* ---------- hook the existing dispatchers ---------- */
   const _form = form, _act = act, _render = render, _attachSlip = attachSlip, _attachReqSlip = attachReqSlip;
@@ -5662,12 +5781,26 @@ setInterval(tickCd, 1000);
       const pl = S.sheet.planId, mo = S.sheet.months;
       api('POST', '/api/billing/request', { planId: pl, months: mo }).then(r => { if (r.s !== 200) return toast(emsg(r)); applyPlat(r.j.plat); S.sheet = { k: 'reqdone', id: r.j.id }; render(); }); return;
     }
+    if (a === 'sendreqpay') {
+      const pl = S.sheet.planId, mo = S.sheet.months;
+      api('POST', '/api/billing/request', { planId: pl, months: mo }).then(r => { if (r.s !== 200) return toast(emsg(r)); applyPlat(r.j.plat); payStart(r.j.id, false); }); return;
+    }
+    if (a === 'payonline') { payStart(d.id, false); return; }
+    if (a === 'paynew') { if (S.sheet && S.sheet.id) payStart(S.sheet.id, true); return; }
+    if (a === 'mailtest') {
+      api('POST', '/api/admin/mailtest', { lang: LANG }).then(r => toast(r.s === 200 ? t('mt.sent', { e: r.j.to }) : t('mt.fail', { e: (r.j && (r.j.detail || r.j.error)) || r.s }))); return;
+    }
     if (a === 'delstaff') {
       const id = S.sheet.id; api('POST', '/api/staff/delete', { id }).then(r => { if (r.s !== 200) return toast(emsg(r)); applyPlat(r.j.plat); closeSheet(); render(); toast(t('cf.deleted')); }); return;
     }
     if (a === 'staffactive') {
       const u = userById(d.id); if (!u || u.ownerId !== curUser().id) return;
       api('POST', '/api/staff', { id: u.id, name: u.name, phone: u.phone || '', email: u.email, perms: u.perms || [], status: u.status === 'active' ? 'suspended' : 'active' }).then(r => { if (r.s !== 200) return toast(emsg(r)); applyPlat(r.j.plat); render(); }); return;
+    }
+    if (PUBLIC && (a === 'chat' || a === 'chatorder')) {
+      const had = D.threads[0] && D.threads[0].cunread > 0; _act(a, d, el);
+      if (had) { const th = D.threads[0]; api('POST', '/api/public/chat', { shop: PUBSLUG, op: 'read', tid: th.id, phone: th.phone }); }
+      return;
     }
     if (PUBLIC && ['mode', 'tab', 'openshop', 'newstore', 'editstore', 'share', 'device', 'opendesign'].includes(a)) return;
     _act(a, d, el);

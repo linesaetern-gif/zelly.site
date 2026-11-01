@@ -98,6 +98,45 @@ const SHOTS = process.argv[2] || ''; if (SHOTS) fs.mkdirSync(SHOTS, { recursive:
   await ow.click('.lp2-top [data-act=authopen][data-m=login]'); await ow.fill('#f-login [name=email]', 'noy@shop.la'); await ow.fill('#f-login [name=pass]', 'wrong'); await ow.click('button[form=f-login]');
   await ow.waitForFunction(() => document.querySelector('#f-login .err').textContent.length > 0); 
   const nf = await mk(390, 700); await nf.goto(base + '/s/nope'); await nf.waitForSelector('.pub-nf'); await shot(nf, '12_notfound');
+
+  /* ---- 9. chat: customer -> owner -> customer ---- */
+  await ev(ow, () => closeSheet()); await login(ow, 'noy@shop.la', 'secret12'); await ow.waitForFunction(() => D.stores.length === 1);
+  await cu.reload(); await cu.waitForSelector('.sf');
+  await cu.click('[data-act=chat]'); await cu.waitForSelector('#f-chat');
+  await cu.fill('#f-chat [name=name]', 'Buyer One'); await cu.fill('#f-chat [name=phone]', '020 9999 8888'); await cu.fill('#f-chat [name=text]', 'Is size M available?'); await shot(cu, '13_chat_start');
+  await cu.click('#f-chat button[type=submit], button[form=f-chat]'); await cu.waitForSelector('.cmsg.me');
+  await ow.waitForFunction(() => D.threads.length === 1 && D.threads[0].unread === 1, null, { timeout: 20000 });
+  await ev(ow, () => { act('tab', { t: 'chat' }); act('chatopen', { id: D.threads[0].id }); });
+  await ow.fill('.chat-form textarea', 'Yes, we have it!'); await ow.press('.chat-form textarea', 'Enter'); await synced(ow); await shot(ow, '14_owner_chat');
+  await cu.waitForFunction(() => document.querySelectorAll('.cmsg.them').length === 1, null, { timeout: 12000 }); await shot(cu, '15_chat_reply');
+  await cu.fill('.chat-form textarea', 'Thanks!'); await cu.press('.chat-form textarea', 'Enter'); await cu.waitForFunction(() => document.querySelectorAll('.cmsg.me').length === 2);
+  await ow.waitForFunction(() => D.threads[0].msgs.length === 3 && D.threads[0].msgs.every(m => m.id), null, { timeout: 20000 });
+
+  /* ---- 10. shop agent code on an order ---- */
+  await ev(ow, () => { D.affs.push({ id: 'a1', name: 'Kaew', phone: '020 1', code: 'KAEW10', store: 'all', pct: 10, active: true, paid: 0, log: [] }); D.seq.aff = 2; }); await synced(ow);
+  await cu.reload(); await cu.waitForSelector('.sf'); await cu.click('[data-act=openp]'); await cu.click('[data-act=addcart]'); await cu.click('.cartbar [data-act=cart]'); await cu.click('[data-act=tocheckout]'); await cu.waitForSelector('#f-co [name=aff]');
+  await cu.fill('#f-co [name=name]', 'Buyer One'); await cu.fill('#f-co [name=phone]', '020 9999 8888'); await cu.fill('#f-co [name=address]', 'Vientiane'); await cu.selectOption('#f-co [name=pay]', 'cod'); await cu.fill('#f-co [name=aff]', 'nope');
+  await cu.click('button[form=f-co]'); await cu.waitForFunction(() => document.querySelector('#f-co .err').textContent.length > 0);
+  await cu.fill('#f-co [name=aff]', 'kaew10'); await cu.click('button[form=f-co]'); await cu.waitForFunction(() => S.sheet && S.sheet.k === 'done', null, { timeout: 8000 });
+  await ow.waitForFunction(() => D.orders.some(o => o.aff === 'KAEW10'), null, { timeout: 20000 });
+  assert.equal(await ev(ow, () => { const o = D.orders.find(x => x.aff); return o.affAmt === Math.round((o.subtotal - o.discount) * 0.1) && o.affAmt > 0; }), true);
+
+  /* ---- 11. owner-to-owner referral, commission and payout ---- */
+  await ev(sa, () => { AFF().on = true; AFF().min = 1000; AFF().pct = 10; }); await sa.waitForTimeout(2500);
+  await ow.reload(); await ow.waitForFunction(() => !!curUser()); const refCode = await ev(ow, () => curUser().ref); assert(/^Z[A-Z0-9]{6}$/.test(refCode), refCode);
+  const fr = await mk(1280, 900); await fr.goto(base + '/?ref=' + refCode); await fr.waitForSelector('.lp2-top'); await fr.click('.lp2-top [data-act=authopen][data-m=signup]'); await fr.waitForSelector('#f-signup');
+  assert.equal(await fr.inputValue('#f-signup [name=ref]'), refCode, 'referral code prefilled from link');
+  await fr.fill('#f-signup [name=name]', 'Friend'); await fr.fill('#f-signup [name=biz]', 'Friend Co'); await fr.fill('#f-signup [name=email]', 'friend@shop.la'); await fr.fill('#f-signup [name=pass]', 'secret12'); await fr.check('#f-signup [name=agree]'); await fr.click('button[form=f-signup]');
+  await fr.waitForFunction(() => !!curUser(), null, { timeout: 8000 });
+  await ev(fr, () => act('upgrade', { plan: 'basic' })); await fr.waitForFunction(() => S.sheet && S.sheet.k === 'upgrade'); await ev(fr, () => act('sendreq', {})); await fr.waitForFunction(() => PLAT.requests.length === 1, null, { timeout: 8000 });
+  await sa.reload(); await sa.waitForFunction(() => !!curUser() && PLAT.requests.some(r => r.status === 'pending')); 
+  const rid = await ev(sa, () => PLAT.requests.find(r => r.status === 'pending' && userById(r.uid).email === 'friend@shop.la').id); await ev(sa, i => { approveRequest(i); render(); }, rid);
+  await sa.waitForTimeout(2800); await ow.reload(); await ow.waitForFunction(() => !!curUser());
+  assert.equal(await ev(ow, () => [PLAT.commissions.length, PLAT.commissions[0] && PLAT.commissions[0].amount > 0, PLAT.users.filter(u => u.refBy === curUser().id).length].join()), '1,true,1');
+  await ev(ow, () => act('tab', { t: 'affiliate' })); await shot(ow, '16_affiliate');
+  await ev(ow, () => act('wdnew', {})); await ow.waitForSelector('#f-wd'); await ow.fill('#f-wd [name=bank]', 'BCEL One 000 111'); await ow.click('button[form=f-wd]');
+  await ow.waitForFunction(() => PLAT.payouts.length === 1, null, { timeout: 8000 }); assert.equal(await ev(ow, () => affBalance(curUser().id)), 0);
+  await sa.reload(); await sa.waitForFunction(() => !!curUser()); assert.equal(await ev(sa, () => PLAT.payouts.length), 1); await ev(sa, () => act('satab', { t: 'affiliate' })); await shot(sa, '17_super_affiliate');
   assert.deepEqual(errs, [], 'page errors: ' + errs.join(' | '));
   console.log('E2E OK'); await br.close(); srv.close(); require('../lib/db').close().then(() => { try { fs.unlinkSync(tmp); } catch (e) {} process.exit(0); });
 })().catch(e => { console.error('E2E FAIL', e); process.exit(1); });

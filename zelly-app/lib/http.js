@@ -24,7 +24,7 @@ async function dispatch(req, res, ctxBase) {
     const ctx = Object.assign({ req, res, params, query: Object.fromEntries(url.searchParams), body: null, cookies: parseCookies(req.headers.cookie) }, ctxBase);
     if (req.method === 'POST') {
       if (!/application\/json/i.test(req.headers['content-type'] || '')) throw new HttpError(415, 'json only');
-      const buf = await readBody(req, r.opts.limit || 12 * 1024 * 1024);
+      const buf = await readBody(req, r.opts.limit || 12 * 1024 * 1024); ctx.raw = buf;
       try { ctx.body = buf.length ? JSON.parse(buf.toString('utf8')) : {}; } catch (e) { throw new HttpError(400, 'bad json'); }
     }
     return r.handler(ctx);

@@ -4,7 +4,8 @@ const fs = require('fs'), path = require('path'), http = require('http');
 try { require('fs').readFileSync(path.join(__dirname, '.env'), 'utf8').split(/\r?\n/).forEach(l => { const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(l); if (m && !(m[1] in process.env)) process.env[m[1]] = m[2].replace(/^["']|["']$/g, ''); }); } catch (e) { /* no .env */ }
 const DB = require('./lib/db'), U = require('./lib/util'), M = require('./lib/model'), S = require('./lib/session');
 const { dispatch, send } = require('./lib/http');
-require('./routes/account'); require('./routes/sync'); require('./routes/public');
+require('./routes/account'); require('./routes/billing'); require('./routes/sync'); require('./routes/public');
+const Bill = require('./routes/billing');
 const { q } = DB;
 const PUB = path.join(__dirname, 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain; charset=utf-8' };
@@ -82,6 +83,7 @@ async function start() {
     await DB.migrate(); await M.getPlat(); await bootstrapAdmin(); ready = true; console.log('[zelly] ready');
   } catch (e) { console.error('[zelly] failed to start:', e.message); srv.close(); process.exit(1); }
   const t = setInterval(sweepOrders, 5 * 60e3); t.unref();
+  const t2 = setInterval(Bill.remindTick, 3600e3); t2.unref(); setTimeout(Bill.remindTick, 60e3).unref();
   const bye = () => { srv.close(() => DB.close().then(() => process.exit(0), () => process.exit(0))); setTimeout(() => process.exit(0), 5e3).unref(); };
   process.on('SIGTERM', bye); process.on('SIGINT', bye);
   return srv;

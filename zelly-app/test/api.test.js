@@ -24,7 +24,7 @@ async function call(who, method, url, body) {
   const base0 = JSON.parse(JSON.stringify(d));
   /* owner builds a shop */
   d.stores.push({ id: 's1', name: 'Noy Shop', slug: 'noyshop', wh: 'w1', color: '#2563eb', currency: '₭', pay: { transfer: { on: true, bank: 'BCEL', acc: '1234', name: 'Noy' }, cod: { on: true }, chat: { on: false }, holdMin: 30 }, open: true });
-  d.products.push({ id: 'p1', name: 'Tee', stores: ['s1'], active: true, variants: [{ sku: 'T-1', name: 'M', price: 100000, cost: 40000 }] });
+  d.products.push({ id: 'p1', name: 'Tee', price: 100000, cost: 40000, stores: ['s1'], active: true, variants: [{ sku: 'T-1', name: 'M', price: 100000, cost: 40000 }] });
   d.stock.w1['T-1'] = 10; d.seq.store = 2; d.seq.prod = 2;
   let ops = Diff.diff(base0, d); assert(ops.length > 0);
   r = await call('o', 'POST', '/api/sync', { doc: 'd', rev, ops }); assert.equal(r.s, 200, JSON.stringify(r.j)); rev = r.j.rev;
@@ -68,6 +68,43 @@ async function call(who, method, url, body) {
   r = await call('o', 'POST', '/api/sync', { doc: 'd', rev: 0, ops: Diff.diff(d3, d3b) }); assert.equal(r.s, 200); const img = r.j.doc.products[0].img; assert(/^\/b\/[a-f0-9]{40}$/.test(img), img);
   const br = await fetch(base + img); assert.equal(br.status, 200); assert.equal(br.headers.get('content-type'), 'image/png');
   const nf = await fetch(base + '/b/' + 'a'.repeat(40)); assert.equal(nf.status, 404);
+
+  /* ---- chat ---- */
+  const phone = '020 9999 8888';
+  r = await call('', 'POST', '/api/public/chat', { shop: 'noyshop', op: 'start', name: 'Buyer', phone, text: 'Hello, is size M in stock?' }); assert.equal(r.s, 200, JSON.stringify(r.j));
+  const th = r.j.thread; assert.equal(th.msgs.length, 1); assert(th.msgs[0].id);
+  r = await call('', 'POST', '/api/public/chat', { shop: 'noyshop', op: 'send', tid: th.id, phone: '111222333', text: 'x' }); assert.equal(r.s, 404, 'thread must need matching phone');
+  r = await call('', 'POST', '/api/public/chat', { shop: 'noyshop', op: 'start', name: '', phone, text: '' }); assert.equal(r.s, 400);
+  r = await call('o', 'GET', '/api/workspace'); let wd = r.j.d.doc, wd2 = JSON.parse(JSON.stringify(wd)); const tt = wd2.threads.find(x => x.id === th.id); assert.equal(tt.unread, 1);
+  tt.msgs.push({ id: 'mOwner1', f: 's', x: 'Yes!', t: Date.now() }); tt.cunread = 1; tt.unread = 0;
+  r = await call('o', 'POST', '/api/sync', { doc: 'd', rev: r.j.d.rev, ops: Diff.diff(wd, wd2) }); assert.equal(r.s, 200);
+  r = await call('', 'POST', '/api/public/chat', { shop: 'noyshop', op: 'send', tid: th.id, phone, text: 'Great, thanks' }); assert.equal(r.j.thread.msgs.length, 3);
+  r = await call('', 'POST', '/api/public/track', { shop: 'noyshop', orders: [], chat: { tid: th.id, phone } }); assert.equal(r.j.thread.msgs.length, 3); assert.equal(r.j.thread.cunread, 1);
+  r = await call('', 'POST', '/api/public/chat', { shop: 'noyshop', op: 'read', tid: th.id, phone }); assert.equal(r.j.thread.cunread, 0);
+  r = await call('o', 'GET', '/api/workspace'); assert.equal(r.j.d.doc.threads[0].msgs.length, 3); assert.equal(r.j.d.doc.threads[0].unread, 1, 'owner own message did not clear later customer message');
+
+  /* ---- shop-level agent codes ---- */
+  wd = r.j.d.doc; wd2 = JSON.parse(JSON.stringify(wd)); wd2.affs.push({ id: 'a1', name: 'Kaew', phone: '020 1', code: 'KAEW10', store: 'all', pct: 10, active: true, paid: 0, log: [] }); wd2.seq.aff = 2;
+  r = await call('o', 'POST', '/api/sync', { doc: 'd', rev: r.j.d.rev, ops: Diff.diff(wd, wd2) }); assert.equal(r.s, 200);
+  r = await call('', 'GET', '/api/public/shop/noyshop'); assert.equal(r.j.d.affs.length, 1); assert(!JSON.stringify(r.j.d.affs).includes('Kaew'), 'agent private data leaked');
+  const ord = aff => ({ shop: 'noyshop', lines: [{ sku: 'T-1', qty: 1 }], cust: { name: 'B', phone, address: 'V', pay: 'cod', aff } });
+  r = await call('', 'POST', '/api/public/order', ord('NOPE')); assert.equal(r.s, 400); assert.equal(r.j.error, 'af.codeBad');
+  r = await call('', 'POST', '/api/public/order', ord('kaew10')); assert.equal(r.s, 200, JSON.stringify(r.j)); assert(!('affAmt' in r.j.order) && !('aff' in r.j.order), 'commission leaked to customer');
+  r = await call('o', 'GET', '/api/workspace'); const ao = r.j.d.doc.orders.find(x => x.id === (JSON.parse(JSON.stringify(r.j.d.doc.orders))[0].id)); assert.equal(ao.aff, 'KAEW10'); assert.equal(ao.affAmt, Math.round(ao.subtotal * 0.1));
+
+  /* ---- owner-to-owner referral ---- */
+  assert(/^Z[A-Z0-9]{6}$/.test(r.j.user.ref), 'owner has a referral code: ' + r.j.user.ref); const refCode = r.j.user.ref, ownerId = r.j.user.id;
+  r = await call('sa', 'POST', '/api/sync', { doc: 'plat', ops: [{ o: 'set', p: ['settings', 'aff', 'on'], v: true }] }); assert.equal(r.s, 200);
+  r = await call('', 'POST', '/api/auth/signup', { name: 'Bad', email: 'bad@x.com', pass: 'secret1', ref: 'ZZZZZZZ' }); assert.equal(r.s, 400); assert.equal(r.j.error, 'af.refBad');
+  r = await call('n2', 'POST', '/api/auth/signup', { name: 'Friend', biz: 'Friend Co', email: 'friend@x.com', pass: 'secret1', ref: refCode.toLowerCase() }); assert.equal(r.s, 200, JSON.stringify(r.j));
+  r = await call('o', 'GET', '/api/workspace'); const fr = r.j.plat.users.find(x => x.email === undefined && x.refBy === ownerId); assert(fr && fr.biz === 'Friend Co', 'owner sees referred shop'); assert(!('pass' in fr)); const friendId = fr.id;
+  r = await call('sa', 'POST', '/api/sync', { doc: 'plat', ops: [{ o: 'add', p: ['commissions'], k: 'CM-1001', v: { id: 'CM-1001', uid: ownerId, from: friendId, pay: 'PAY-1', base: 1000000, pct: 10, amount: 100000, t: Date.now() }, after: null }, { o: 'set', p: ['seq', 'comm'], v: 1002 }] }); assert.equal(r.s, 200);
+  r = await call('o', 'GET', '/api/workspace'); assert.equal(r.j.plat.commissions.length, 1);
+  r = await call('n2', 'GET', '/api/workspace'); assert.equal(r.j.plat.commissions.length, 0, 'others must not see commissions');
+  r = await call('o', 'POST', '/api/affiliate/payout', { bank: '' }); assert.equal(r.s, 400);
+  r = await call('o', 'POST', '/api/affiliate/payout', { bank: 'BCEL 123' }); assert.equal(r.s, 200); assert.equal(r.j.plat.payouts[0].amount, 100000);
+  r = await call('o', 'POST', '/api/affiliate/payout', { bank: 'BCEL 123' }); assert.equal(r.s, 400); assert.equal(r.j.error, 'af.minErr');
+  r = await call('sa', 'GET', '/api/workspace'); assert.equal(r.j.plat.payouts.length, 1);
   /* static + injection */
   const home = await (await fetch(base + '/s/noyshop')).text(); assert(home.includes('"shop":"noyshop"'));
   const tr = await fetch(base + '/../../etc/passwd'); assert(tr.status === 200 || tr.status === 404);
