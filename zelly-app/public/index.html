@@ -2639,7 +2639,7 @@ const PLAN_TONE = { free: '', basic: 'info', pro: 'ok', business: 'warn' };
 
 const PLAT = {
   settings: {
-    signupOpen: true, approval: false, trialDays: 14, trialPlan: 'pro', graceDays: 3, autoDowngrade: true, lockOnExpire: true,
+    signupOpen: true, approval: false, trialDays: 0, trialPlan: 'pro', graceDays: 3, autoDowngrade: true, lockOnExpire: true,
     disc3: 5, disc12: 15, reqDays: 3,
     pay: { transfer: { on: true, bank: 'BCEL One', accName: 'ZELLY CO., LTD', accNo: '000 0000 0099', qr: '', note: '' } },
     whatsapp: '020 5555 0199', phone: '021 555 019', line: '@zelly', email: 'hello@zelly.example',
@@ -2737,7 +2737,7 @@ function doSignup(f) {
   if (!PLAT.settings.signupOpen) return { err: t('au.closed') };
   if (userByEmail(f.email)) return { err: t('au.exists') };
   const st = PLAT.settings, trial = st.trialDays > 0 && planOf(st.trialPlan) && st.trialPlan !== 'free';
-  const u = { id: 'u' + (PLAT.seq.user++), role: 'owner', name: f.name, biz: f.biz, email: f.email, phone: f.phone, pass: f.pass, planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? addDays(st.trialDays) : '', joined: Date.now(), note: '', refBy: (PLAT.settings.aff && PLAT.settings.aff.on && f.refBy) || '', bizType: f.bizType || '', img: f.img || '', prov: f.prov || '', dist: f.dist || '', vill: f.vill || '', addr: f.addr || '' };
+  const u = { id: 'u' + (PLAT.seq.user++), role: 'owner', name: f.name, biz: f.biz, email: f.email, phone: f.phone, pass: f.pass, planId: trial ? st.trialPlan : 'free', status: 'active', exp: trial ? addDays(st.trialDays) : '', joined: Date.now(), note: '', refBy: (PLAT.settings.aff && PLAT.settings.aff.on && f.refBy) || '', bizType: f.bizType || '', img: f.img || '', prov: f.prov || '', dist: f.dist || '', vill: f.vill || '', addr: f.addr || '' };
   PLAT.users.push(u);
   if (u.status === 'pending') return { pending: true };
   enterUser(u); return { u, trial };
@@ -3123,7 +3123,7 @@ function saPlans() {
 function saPolicy() {
   const s = PLAT.settings, chk = (n, v, l) => '<label class="check"><input type="checkbox" name="' + n + '"' + (v ? ' checked' : '') + '>' + l + '</label>';
   return '<div class="head"><div><h1>' + t('sa.policy') + '</h1><p class="muted sm">' + t('sa.policySub') + '</p></div></div>' + (API_MODE ? sysStatus() : '') + '<form class="stack" id="f-policy" data-form="policy" novalidate>' +
-    '<section class="card stack"><h2 style="margin:0">' + t('po.signup') + '</h2>' + chk('signupOpen', s.signupOpen, t('po.open')) + chk('approval', s.approval, t('po.approval')) +
+    '<section class="card stack"><h2 style="margin:0">' + t('po.signup') + '</h2>' + chk('signupOpen', s.signupOpen, t('po.open')) +
     '<div class="fgrid">' + field(t('po.trialDays'), '<input type="number" name="trialDays" min="0" value="' + s.trialDays + '">', t('po.trialHint')) + field(t('po.trialPlan'), '<select name="trialPlan">' + PLAT.plans.filter(p => p.id !== 'free').map(p => opt(p.id, L(p.name), p.id === s.trialPlan)).join('') + '</select>') + '</div></section>' +
     '<section class="card stack"><h2 style="margin:0">' + t('po.payTitle') + '</h2><p class="muted xs">' + t('po.payHint') + '</p>' + chk('ptr_on', s.pay.transfer.on, t('pay.transfer')) +
     '<div class="fgrid">' + field(t('pay.bank'), '<input type="text" name="ptr_bank" value="' + esc(s.pay.transfer.bank) + '">') + field(t('pay.accName'), '<input type="text" name="ptr_accName" value="' + esc(s.pay.transfer.accName) + '">') + field(t('pay.accNo'), '<input type="text" name="ptr_accNo" value="' + esc(s.pay.transfer.accNo) + '">') + '</div>' +
@@ -5473,7 +5473,7 @@ function form(k, f) {
     case 'policy': {
       const s = PLAT.settings, n = k => Math.max(0, +g(k) || 0);
       if (fd.get('ptr_on') === 'on' && !g('ptr_accNo') && !s.pay.transfer.qr) return setErr(f, t('err.payAcc'));
-      Object.assign(s, { signupOpen: fd.get('signupOpen') === 'on', approval: fd.get('approval') === 'on', autoDowngrade: fd.get('autoDowngrade') === 'on', lockOnExpire: fd.get('lockOnExpire') === 'on', trialDays: n('trialDays'), trialPlan: g('trialPlan'), graceDays: n('graceDays'), disc3: Math.min(90, n('disc3')), disc12: Math.min(90, n('disc12')), whatsapp: g('whatsapp'), phone: g('phone'), line: g('line'), email: g('email'), hours: lt(g('hours'), g('hours'), g('hours')), address: lt(g('address'), g('address'), g('address')), terms: lt(g('terms'), g('terms'), g('terms')) });
+      Object.assign(s, { signupOpen: fd.get('signupOpen') === 'on', autoDowngrade: fd.get('autoDowngrade') === 'on', lockOnExpire: fd.get('lockOnExpire') === 'on', trialDays: n('trialDays'), trialPlan: g('trialPlan'), graceDays: n('graceDays'), disc3: Math.min(90, n('disc3')), disc12: Math.min(90, n('disc12')), whatsapp: g('whatsapp'), phone: g('phone'), line: g('line'), email: g('email'), hours: lt(g('hours'), g('hours'), g('hours')), address: lt(g('address'), g('address'), g('address')), terms: lt(g('terms'), g('terms'), g('terms')) });
       s.reqDays = Math.min(30, Math.max(1, +g('reqDays') || 3));
       Object.assign(s.pay.transfer, { on: fd.get('ptr_on') === 'on', bank: g('ptr_bank'), accName: g('ptr_accName'), accNo: g('ptr_accNo'), note: g('ptr_note') });
       render(); toast(t('toast.policySaved')); break;

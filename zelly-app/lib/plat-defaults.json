@@ -2,7 +2,7 @@
  "settings": {
   "signupOpen": true,
   "approval": false,
-  "trialDays": 14,
+  "trialDays": 0,
   "trialPlan": "pro",
   "graceDays": 3,
   "autoDowngrade": true,

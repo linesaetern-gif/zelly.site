@@ -95,7 +95,7 @@ route('POST', '/api/auth/signup', async ctx => {
     const rc = cleanRef(b.ref); let refBy = '';
     if (rc) { const rf = await ownerByRef(rc); if (!rf) return { error: 'af.refBad' }; if (st.aff && st.aff.on) refBy = rf.id; }
     const trial = st.trialDays > 0 && M.planOf(pl.doc, st.trialPlan) && st.trialPlan !== 'free';
-    const u = { role: 'owner', email, name, biz: clip(b.biz, 100).trim(), phone: clip(b.phone, 30).trim(), planId: trial ? st.trialPlan : 'free', status: st.approval ? 'pending' : 'active', exp: trial ? U.addDays(st.trialDays) : '', joined: Date.now(), note: '', last: Date.now(), refBy, ref: await newRef(), lang: LANGS.includes(b.lang) ? b.lang : 'lo', bizType: BIZ_TYPES.includes(b.bizType) ? b.bizType : '', prov: PROVS.includes(b.prov) ? b.prov : '', dist: clip(b.dist, 80).trim(), vill: clip(b.vill, 80).trim(), addr: clip(b.addr, 300).trim(), img };
+    const u = { role: 'owner', email, name, biz: clip(b.biz, 100).trim(), phone: clip(b.phone, 30).trim(), planId: trial ? st.trialPlan : 'free', status: 'active' /* new owners start at once, no admin approval */, exp: trial ? U.addDays(st.trialDays) : '', joined: Date.now(), note: '', last: Date.now(), refBy, ref: await newRef(), lang: LANGS.includes(b.lang) ? b.lang : 'lo', bizType: BIZ_TYPES.includes(b.bizType) ? b.bizType : '', prov: PROVS.includes(b.prov) ? b.prov : '', dist: clip(b.dist, 80).trim(), vill: clip(b.vill, 80).trim(), addr: clip(b.addr, 300).trim(), img };
     const id = await M.insertUser(u, await U.hashPassword(pass));
     return { id, pending: u.status === 'pending', trial: !!trial, u: Object.assign({}, u, { email }) };
   });

@@ -83,6 +83,10 @@ async function call(who, method, url, body) {
   r = await call('o', 'POST', '/api/sync', { doc: 'plat', ops: [{ o: 'set', p: ['settings', 'signupOpen'], v: false }] }); assert.equal(r.s, 403);
   r = await call('sa', 'GET', '/api/workspace'); assert(r.j.plat.users.length >= 3, 'super sees users');
   r = await call('sa', 'POST', '/api/sync', { doc: 'plat', ops: [{ o: 'set', p: ['settings', 'trialDays'], v: 3 }] }); assert.equal(r.s, 200, JSON.stringify(r.j));
+  /* new owners start at once on the free plan, even if an old setting asks for approval or a trial is switched off */
+  r = await call('sa', 'POST', '/api/sync', { doc: 'plat', ops: [{ o: 'set', p: ['settings', 'approval'], v: true }, { o: 'set', p: ['settings', 'trialDays'], v: 0 }] }); assert.equal(r.s, 200, JSON.stringify(r.j));
+  r = await call('inst', 'POST', '/api/auth/signup', { name: 'Instant', email: 'instant@x.com', pass: 'secret1', biz: 'Instant Shop', phone: '020 7777 1234' }); assert.equal(r.s, 200); assert.equal(r.j.pending, false, 'no approval wait');
+  r = await call('inst', 'GET', '/api/workspace'); assert.equal(r.s, 200, 'signed in straight away'); { const me = r.j.plat.users.find(u => u.email === 'instant@x.com'); assert(me, 'own account in workspace'); assert.equal(me.planId, 'free'); assert.equal(me.status, 'active'); }
   r = await call('', 'GET', '/api/workspace'); assert.equal(r.s, 401);
   /* blob */
   const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
